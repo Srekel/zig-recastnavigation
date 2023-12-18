@@ -53,3 +53,7 @@ build
 ## IDE files
 .idea/
 cmake-build-*/
+
+## Zig
+zig-cache/
+zig-out/
