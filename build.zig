@@ -21,58 +21,27 @@ pub fn package(
     });
 
     const zig_recastnavigation_c_cpp = b.addStaticLibrary(.{
-        .name = "zignavlol",
+        .name = "zignav",
         .target = target,
         .optimize = optimize,
     });
     zig_recastnavigation_c_cpp.linkLibC();
     zig_recastnavigation_c_cpp.addIncludePath(.{ .path = thisDir() ++ "/Recast/Include" });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Include/Recast_glue.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/Recast.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/RecastAlloc.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/RecastArea.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/RecastAssert.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/RecastContour.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/RecastFilter.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/RecastLayers.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/RecastMesh.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/RecastMeshDetail.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/RecastRasterization.cpp" },
-        .flags = &.{},
-    });
-    zig_recastnavigation_c_cpp.addCSourceFile(.{
-        .file = .{ .path = thisDir() ++ "/Recast/Source/RecastRegion.cpp" },
+    zig_recastnavigation_c_cpp.addCSourceFiles(.{
+        .files = &.{
+            thisDir() ++ "/Recast/Include/Recast_glue.cpp",
+            thisDir() ++ "/Recast/Source/Recast.cpp",
+            thisDir() ++ "/Recast/Source/RecastAlloc.cpp",
+            thisDir() ++ "/Recast/Source/RecastArea.cpp",
+            thisDir() ++ "/Recast/Source/RecastAssert.cpp",
+            thisDir() ++ "/Recast/Source/RecastContour.cpp",
+            thisDir() ++ "/Recast/Source/RecastFilter.cpp",
+            thisDir() ++ "/Recast/Source/RecastLayers.cpp",
+            thisDir() ++ "/Recast/Source/RecastMesh.cpp",
+            thisDir() ++ "/Recast/Source/RecastMeshDetail.cpp",
+            thisDir() ++ "/Recast/Source/RecastRasterization.cpp",
+            thisDir() ++ "/Recast/Source/RecastRegion.cpp",
+        },
         .flags = &.{},
     });
 
@@ -97,7 +66,7 @@ pub fn runTests(
 ) *std.Build.Step {
     const tests = b.addTest(.{
         .name = "zig_recastnavigation-tests",
-        .root_source_file = .{ .path = thisDir() ++ "/src/main.zig" },
+        .root_source_file = .{ .path = thisDir() ++ "/main.zig" },
         .target = target,
         .optimize = optimize,
     });
