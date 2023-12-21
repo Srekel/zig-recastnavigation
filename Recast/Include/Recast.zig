@@ -6,9 +6,7 @@ extern const _1_RC_PI_: *const f32;
 pub const RC_PI = _1_RC_PI_;
 
 /// Used to ignore unused function parameters and silence any compiler warnings.
-pub fn rcIgnoreUnused(comptime T: anytype, arg_0: *const T) void {
-    _ = arg_0;
-}
+pub fn rcIgnoreUnused(comptime T: anytype, arg_0: *const T) void {}
 
 /// Recast log categories.
 /// @see rcContext
@@ -115,7 +113,7 @@ pub const rcContext = extern struct {
 
     /// Constructor.
     ///  @param[in] state 	TRUE if the logging and performance timers should be enabled.  [Default: true]
-    extern fn _1_rcContext_init_(state: bool) rcContext;
+    extern fn _1_rcContext_init_(self: *rcContext, state: bool) void;
     pub const init = _1_rcContext_init_;
 
     extern fn _1_rcContext_deinit_(self: *rcContext) void;
@@ -165,17 +163,11 @@ pub const rcScopedTimer = extern struct {
     /// Constructs an instance and starts the timer.
     ///  @param[in] ctx 		The context to use.
     ///  @param[in] label 	The category of the timer.
-    extern fn _1_rcScopedTimer_init_(ctx: [*c]rcContext, label: rcTimerLabel) rcScopedTimer;
+    extern fn _1_rcScopedTimer_init_(self: *rcScopedTimer, ctx: [*c]rcContext, label: rcTimerLabel) void;
     pub const init = _1_rcScopedTimer_init_;
 
     extern fn _1_rcScopedTimer_deinit_(self: *rcScopedTimer) void;
     pub const deinit = _1_rcScopedTimer_deinit_;
-
-    extern fn _2_rcScopedTimer_init_(__arg0: *const rcScopedTimer) rcScopedTimer;
-    pub const init2 = _2_rcScopedTimer_init_;
-
-    extern fn _1_rcScopedTimer_copyFrom_(self: *rcScopedTimer, __arg0: *const rcScopedTimer) *rcScopedTimer;
-    pub const copyFrom = _1_rcScopedTimer_copyFrom_;
 };
 
 /// Specifies a configuration to use when performing Recast builds.
@@ -244,16 +236,18 @@ pub const RC_SPANS_PER_POOL = _1_RC_SPANS_PER_POOL_;
 /// Represents a span in a heightfield.
 /// @see rcHeightfield
 pub const rcSpan = extern struct {
-    /// The lower limit of the span. [Limit:
-    ///<
-    /// #smax]
-    smin: c_uint = RC_SPAN_HEIGHT_BITS,
-    /// The upper limit of the span. [Limit:
-    ///<
-    ///= #RC_SPAN_MAX_HEIGHT]
-    smax: c_uint = RC_SPAN_HEIGHT_BITS,
-    /// The area id assigned to the span.
-    area: c_uint = 6,
+    field_1: packed struct(u32) {
+        /// The lower limit of the span. [Limit:
+        ///<
+        /// #smax]
+        smin: u13,
+        /// The upper limit of the span. [Limit:
+        ///<
+        ///= #RC_SPAN_MAX_HEIGHT]
+        smax: u13,
+        /// The area id assigned to the span.
+        area: u6,
+    },
     /// The next span higher up in column.
     next: [*c]rcSpan,
 };
@@ -289,25 +283,21 @@ pub const rcHeightfield = extern struct {
     /// The next free span.
     freelist: [*c]rcSpan,
 
-    extern fn _1_rcHeightfield_init_() rcHeightfield;
+    extern fn _1_rcHeightfield_init_(self: *rcHeightfield) void;
     pub const init = _1_rcHeightfield_init_;
 
     extern fn _1_rcHeightfield_deinit_(self: *rcHeightfield) void;
     pub const deinit = _1_rcHeightfield_deinit_;
-
-    extern fn _2_rcHeightfield_init_(__arg0: *const rcHeightfield) rcHeightfield;
-    pub const init2 = _2_rcHeightfield_init_;
-
-    extern fn _1_rcHeightfield_copyFrom_(self: *rcHeightfield, __arg0: *const rcHeightfield) *rcHeightfield;
-    pub const copyFrom = _1_rcHeightfield_copyFrom_;
 };
 
 /// Provides information on the content of a cell column in a compact heightfield.
 pub const rcCompactCell = extern struct {
-    /// Index to the first span in the column.
-    index: c_uint = 24,
-    /// Number of spans in the column.
-    count: c_uint = 8,
+    field_1: packed struct(u32) {
+        /// Index to the first span in the column.
+        index: u24,
+        /// Number of spans in the column.
+        count: u8,
+    },
 };
 
 /// Represents a span of unobstructed space within a compact heightfield.
@@ -316,10 +306,12 @@ pub const rcCompactSpan = extern struct {
     y: c_ushort,
     /// The id of the region the span belongs to. (Or zero if not in a region.)
     reg: c_ushort,
-    /// Packed neighbor connection data.
-    con: c_uint = 24,
-    /// The height of the span.  (Measured from #y.)
-    h: c_uint = 8,
+    field_1: packed struct(u32) {
+        /// Packed neighbor connection data.
+        con: u24,
+        /// The height of the span.  (Measured from #y.)
+        h: u8,
+    },
 };
 
 /// A compact, static heightfield representing unobstructed space.
@@ -358,17 +350,11 @@ pub const rcCompactHeightfield = extern struct {
     /// Array containing area id data. [Size: #spanCount]
     areas: [*c]u8,
 
-    extern fn _1_rcCompactHeightfield_init_() rcCompactHeightfield;
+    extern fn _1_rcCompactHeightfield_init_(self: *rcCompactHeightfield) void;
     pub const init = _1_rcCompactHeightfield_init_;
 
     extern fn _1_rcCompactHeightfield_deinit_(self: *rcCompactHeightfield) void;
     pub const deinit = _1_rcCompactHeightfield_deinit_;
-
-    extern fn _2_rcCompactHeightfield_init_(__arg0: *const rcCompactHeightfield) rcCompactHeightfield;
-    pub const init2 = _2_rcCompactHeightfield_init_;
-
-    extern fn _1_rcCompactHeightfield_copyFrom_(self: *rcCompactHeightfield, __arg0: *const rcCompactHeightfield) *rcCompactHeightfield;
-    pub const copyFrom = _1_rcCompactHeightfield_copyFrom_;
 };
 
 /// Represents a heightfield layer within a layer set.
@@ -416,17 +402,11 @@ pub const rcHeightfieldLayerSet = extern struct {
     /// The number of layers in the set.
     nlayers: c_int,
 
-    extern fn _1_rcHeightfieldLayerSet_init_() rcHeightfieldLayerSet;
+    extern fn _1_rcHeightfieldLayerSet_init_(self: *rcHeightfieldLayerSet) void;
     pub const init = _1_rcHeightfieldLayerSet_init_;
 
     extern fn _1_rcHeightfieldLayerSet_deinit_(self: *rcHeightfieldLayerSet) void;
     pub const deinit = _1_rcHeightfieldLayerSet_deinit_;
-
-    extern fn _2_rcHeightfieldLayerSet_init_(__arg0: *const rcHeightfieldLayerSet) rcHeightfieldLayerSet;
-    pub const init2 = _2_rcHeightfieldLayerSet_init_;
-
-    extern fn _1_rcHeightfieldLayerSet_copyFrom_(self: *rcHeightfieldLayerSet, __arg0: *const rcHeightfieldLayerSet) *rcHeightfieldLayerSet;
-    pub const copyFrom = _1_rcHeightfieldLayerSet_copyFrom_;
 };
 
 /// Represents a simple, non-overlapping contour in field space.
@@ -469,17 +449,11 @@ pub const rcContourSet = extern struct {
     /// The max edge error that this contour set was simplified with.
     maxError: f32,
 
-    extern fn _1_rcContourSet_init_() rcContourSet;
+    extern fn _1_rcContourSet_init_(self: *rcContourSet) void;
     pub const init = _1_rcContourSet_init_;
 
     extern fn _1_rcContourSet_deinit_(self: *rcContourSet) void;
     pub const deinit = _1_rcContourSet_deinit_;
-
-    extern fn _2_rcContourSet_init_(__arg0: *const rcContourSet) rcContourSet;
-    pub const init2 = _2_rcContourSet_init_;
-
-    extern fn _1_rcContourSet_copyFrom_(self: *rcContourSet, __arg0: *const rcContourSet) *rcContourSet;
-    pub const copyFrom = _1_rcContourSet_copyFrom_;
 };
 
 /// Represents a polygon mesh suitable for use in building a navigation mesh.
@@ -516,17 +490,11 @@ pub const rcPolyMesh = extern struct {
     /// The max error of the polygon edges in the mesh.
     maxEdgeError: f32,
 
-    extern fn _1_rcPolyMesh_init_() rcPolyMesh;
+    extern fn _1_rcPolyMesh_init_(self: *rcPolyMesh) void;
     pub const init = _1_rcPolyMesh_init_;
 
     extern fn _1_rcPolyMesh_deinit_(self: *rcPolyMesh) void;
     pub const deinit = _1_rcPolyMesh_deinit_;
-
-    extern fn _2_rcPolyMesh_init_(__arg0: *const rcPolyMesh) rcPolyMesh;
-    pub const init2 = _2_rcPolyMesh_init_;
-
-    extern fn _1_rcPolyMesh_copyFrom_(self: *rcPolyMesh, __arg0: *const rcPolyMesh) *rcPolyMesh;
-    pub const copyFrom = _1_rcPolyMesh_copyFrom_;
 };
 
 /// Contains triangle meshes that represent detailed height data associated
@@ -546,14 +514,8 @@ pub const rcPolyMeshDetail = extern struct {
     /// The number of triangles in #tris.
     ntris: c_int,
 
-    extern fn _1_rcPolyMeshDetail_init_() rcPolyMeshDetail;
+    extern fn _1_rcPolyMeshDetail_init_(self: *rcPolyMeshDetail) void;
     pub const init = _1_rcPolyMeshDetail_init_;
-
-    extern fn _2_rcPolyMeshDetail_init_(__arg0: *const rcPolyMeshDetail) rcPolyMeshDetail;
-    pub const init2 = _2_rcPolyMeshDetail_init_;
-
-    extern fn _1_rcPolyMeshDetail_copyFrom_(self: *rcPolyMeshDetail, __arg0: *const rcPolyMeshDetail) *rcPolyMeshDetail;
-    pub const copyFrom = _1_rcPolyMeshDetail_copyFrom_;
 };
 
 extern fn _1_rcAllocHeightfield_() [*c]rcHeightfield;
