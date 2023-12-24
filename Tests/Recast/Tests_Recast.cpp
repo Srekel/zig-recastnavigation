@@ -1017,7 +1017,7 @@ TEST_CASE("rcVector")
 		REQUIRE(vec[0] == 10);
 		vec.pop_back();
 		REQUIRE(vec.size() == 0);
-		vec.resize(100, 5);
+		vec.resize_and_set(100, 5);
 		REQUIRE(vec.size() == 100);
 		for (int i = 0; i < 100; i++) {
 			REQUIRE(vec[i] == 5);
@@ -1067,7 +1067,7 @@ TEST_CASE("rcVector")
 		REQUIRE(Incrementor::copies == 0);
 
 		Incrementor::Reset();
-		vec.resize(100, Incrementor());
+		vec.resize_and_set(100, Incrementor());
 		REQUIRE(Incrementor::constructions == 1);
 		REQUIRE(Incrementor::destructions == 1);
 		REQUIRE(Incrementor::copies == 100);
@@ -1146,7 +1146,7 @@ TEST_CASE("rcVector")
 		REQUIRE(a[14] == 0xc);
 
 		rcTempVector<int> b;
-		b.assign(a.data(), a.data() + a.size());
+		b.assign_range(a.data(), a.data() + a.size());
 		REQUIRE(b.size() == a.size());
 		REQUIRE(b[0] == a[0]);
 	}
@@ -1301,7 +1301,7 @@ BM(rcVector_AssignIndices, kNumLoops)
 BM(rcVector_Resize, kNumLoops)
 {
 	rcTempVector<int> v;
-	v.resize(kNumInserts, 2);
+	v.resize_and_set(kNumInserts, 2);
 	DoNotOptimize(v.data());
 }
 
@@ -1340,7 +1340,7 @@ BM(stdvector_AssignIndices, kNumLoops)
 BM(stdvector_Resize, kNumLoops)
 {
 	std::vector<int> v;
-	v.resize(kNumInserts, 2);
+	v.resize_and_set(kNumInserts, 2);
 	DoNotOptimize(v.data());
 }
 

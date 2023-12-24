@@ -106,10 +106,10 @@ class rcVectorBase {
 	rcSizeType m_cap;
 	T* m_data;
 	// Constructs a T at the give address with either the copy constructor or the default.
-	static void construct(T* p, const T& v) { ::new(rcNewTag(), (void*)p) T(v); }
+	static void construct_and_set(T* p, const T& v) { ::new(rcNewTag(), (void*)p) T(v); }
 	static void construct(T* p) { ::new(rcNewTag(), (void*)p) T; }
 	static void construct_range(T* begin, T* end);
-	static void construct_range(T* begin, T* end, const T& value);
+	static void construct_range_and_set(T* begin, T* end, const T& value);
 	static void copy_range(T* dst, const T* begin, const T* end);
 	void destroy_range(rcSizeType begin, rcSizeType end);
 	// Creates an array of the given size, copies all of this vector's data into it, and returns it.
@@ -122,20 +122,20 @@ class rcVectorBase {
 	typedef T value_type;
 
 	rcVectorBase() : m_size(0), m_cap(0), m_data(0) {}
-	rcVectorBase(const rcVectorBase<T, H>& other) : m_size(0), m_cap(0), m_data(0) { assign(other.begin(), other.end()); }
+	rcVectorBase(const rcVectorBase<T, H>& other) : m_size(0), m_cap(0), m_data(0) { assign_range(other.begin(), other.end()); }
 	explicit rcVectorBase(rcSizeType count) : m_size(0), m_cap(0), m_data(0) { resize(count); }
 	rcVectorBase(rcSizeType count, const T& value) : m_size(0), m_cap(0), m_data(0) { resize(count, value); }
-	rcVectorBase(const T* begin, const T* end) : m_size(0), m_cap(0), m_data(0) { assign(begin, end); }
+	rcVectorBase(const T* begin, const T* end) : m_size(0), m_cap(0), m_data(0) { assign_range(begin, end); }
 	~rcVectorBase() { destroy_range(0, m_size); rcFree(m_data); }
 
 	// Unlike in std::vector, we return a bool to indicate whether the alloc was successful.
 	bool reserve(rcSizeType size);
 
 	void assign(rcSizeType count, const T& value) { clear(); resize(count, value); }
-	void assign(const T* begin, const T* end);
+	void assign_range(const T* begin, const T* end);
 
 	void resize(rcSizeType size) { resize_impl(size, NULL); }
-	void resize(rcSizeType size, const T& value) { resize_impl(size, &value); }
+	void resize_and_set(rcSizeType size, const T& value) { resize_impl(size, &value); }
 	// Not implemented as resize(0) because resize requires T to be default-constructible.
 	void clear() { destroy_range(0, m_size); m_size = 0; }
 
@@ -192,7 +192,7 @@ T* rcVectorBase<T, H>::allocate_and_copy(rcSizeType size) {
 	return new_data;
 }
 template <typename T, rcAllocHint H>
-void rcVectorBase<T, H>::assign(const T* begin, const T* end) {
+void rcVectorBase<T, H>::assign_range(const T* begin, const T* end) {
 	clear();
 	reserve(end - begin);
 	m_size = end - begin;
@@ -203,7 +203,7 @@ void rcVectorBase<T, H>::push_back(const T& value) {
 	// rcLikely increases performance by ~50% on BM_rcVector_PushPreallocated,
 	// and by ~2-5% on BM_rcVector_Push.
 	if (rcLikely(m_size < m_cap)) {
-		construct(m_data + m_size++, value);
+		construct_and_set(m_data + m_size++, value);
 		return;
 	}
 
@@ -211,7 +211,7 @@ void rcVectorBase<T, H>::push_back(const T& value) {
 	T* data = allocate_and_copy(new_cap);
 	// construct between allocate and destroy+free in case value is
 	// in this vector.
-	construct(data + m_size, value);
+	construct_and_set(data + m_size, value);
 	destroy_range(0, m_size);
 	m_size++;
 	m_cap = new_cap;
@@ -284,14 +284,14 @@ void rcVectorBase<T, H>::construct_range(T* begin, T* end) {
 template <typename T, rcAllocHint H>
 void rcVectorBase<T, H>::construct_range(T* begin, T* end, const T& value) {
 	for (T* p = begin; p < end; p++) {
-		construct(p, value);
+		construct_and_set(p, value);
 	}
 }
 // static
 template <typename T, rcAllocHint H>
 void rcVectorBase<T, H>::copy_range(T* dst, const T* begin, const T* end) {
 	for (rcSizeType i = 0 ; i < end - begin; i++) {
-		construct(dst + i, begin[i]);
+		construct_and_set(dst + i, begin[i]);
 	}
 }
 template <typename T, rcAllocHint H>
