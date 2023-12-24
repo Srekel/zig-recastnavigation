@@ -124,7 +124,7 @@ class rcVectorBase {
 	rcVectorBase() : m_size(0), m_cap(0), m_data(0) {}
 	rcVectorBase(const rcVectorBase<T, H>& other) : m_size(0), m_cap(0), m_data(0) { assign_range(other.begin(), other.end()); }
 	explicit rcVectorBase(rcSizeType count) : m_size(0), m_cap(0), m_data(0) { resize(count); }
-	rcVectorBase(rcSizeType count, const T& value) : m_size(0), m_cap(0), m_data(0) { resize(count, value); }
+	rcVectorBase(rcSizeType count, const T& value) : m_size(0), m_cap(0), m_data(0) { resize_and_set(count, value); }
 	rcVectorBase(const T* begin, const T* end) : m_size(0), m_cap(0), m_data(0) { assign_range(begin, end); }
 	~rcVectorBase() { destroy_range(0, m_size); rcFree(m_data); }
 
