@@ -194,6 +194,9 @@ pub const dtTileCache = extern struct {
     extern fn _1_dtTileCache_getObstacleRef_(self: *const dtTileCache, obmin: [*c]const dtTileCacheObstacle) dtObstacleRef;
     pub const getObstacleRef = _1_dtTileCache_getObstacleRef_;
 
+    extern fn _1_dtTileCache_init_(self: *dtTileCache, params: [*c]const dtTileCacheParams, talloc: [*c]dtTileCacheAlloc, tcomp: [*c]dtTileCacheCompressor, tmproc: [*c]dtTileCacheMeshProcess) dtStatus;
+    pub const init = _1_dtTileCache_init_;
+
     extern fn _1_dtTileCache_getTilesAt_(self: *const dtTileCache, tx: c_int, ty: c_int, tiles: [*c]dtCompressedTileRef, maxTiles: c_int) c_int;
     pub const getTilesAt = _1_dtTileCache_getTilesAt_;
 
@@ -205,6 +208,54 @@ pub const dtTileCache = extern struct {
 
     extern fn _1_dtTileCache_getTileByRef_(self: *const dtTileCache, ref: dtCompressedTileRef) [*c]const dtCompressedTile;
     pub const getTileByRef = _1_dtTileCache_getTileByRef_;
+
+    extern fn _1_dtTileCache_addTile_(self: *dtTileCache, data: [*c]u8, dataSize: c_int, flags: u8, result: [*c]dtCompressedTileRef) dtStatus;
+    pub const addTile = _1_dtTileCache_addTile_;
+
+    extern fn _1_dtTileCache_removeTile_(self: *dtTileCache, ref: dtCompressedTileRef, data: [*c][*c]u8, dataSize: [*c]c_int) dtStatus;
+    pub const removeTile = _1_dtTileCache_removeTile_;
+
+    extern fn _1_dtTileCache_addObstacle_(self: *dtTileCache, pos: [*c]const f32, radius: f32, height: f32, result: [*c]dtObstacleRef) dtStatus;
+    /// Cylinder obstacle.
+    pub const addObstacle = _1_dtTileCache_addObstacle_;
+
+    extern fn _1_dtTileCache_addBoxObstacle_(self: *dtTileCache, bmin: [*c]const f32, bmax: [*c]const f32, result: [*c]dtObstacleRef) dtStatus;
+    /// Aabb obstacle.
+    pub const addBoxObstacle = _1_dtTileCache_addBoxObstacle_;
+
+    extern fn _2_dtTileCache_addBoxObstacle_(self: *dtTileCache, center: [*c]const f32, halfExtents: [*c]const f32, yRadians: f32, result: [*c]dtObstacleRef) dtStatus;
+    /// Box obstacle: can be rotated in Y.
+    pub const addBoxObstacle__Overload2 = _2_dtTileCache_addBoxObstacle_;
+
+    extern fn _1_dtTileCache_removeObstacle_(self: *dtTileCache, ref: dtObstacleRef) dtStatus;
+    pub const removeObstacle = _1_dtTileCache_removeObstacle_;
+
+    extern fn _1_dtTileCache_queryTiles_(self: *const dtTileCache, bmin: [*c]const f32, bmax: [*c]const f32, results: [*c]dtCompressedTileRef, resultCount: [*c]c_int, maxResults: c_int) dtStatus;
+    pub const queryTiles = _1_dtTileCache_queryTiles_;
+
+    extern fn _1_dtTileCache_update_(self: *dtTileCache, dt: f32, navmesh: [*c]dtNavMesh, upToDate: [*c]bool) dtStatus;
+    /// Updates the tile cache by rebuilding tiles touched by unfinished obstacle requests.
+    ///  @param[in] dt 			The time step size. Currently not used.
+    ///  @param[in] navmesh 		The mesh to affect when rebuilding tiles.
+    ///  @param[out] upToDate 	Whether the tile cache is fully up to date with obstacle requests and tile rebuilds.
+    ///  							If the tile cache is up to date another (immediate) call to update will have no effect;
+    ///  							otherwise another call will continue processing obstacle requests and tile rebuilds.
+    pub fn update(
+        self: *dtTileCache,
+        dt: f32,
+        navmesh: [*c]dtNavMesh,
+        __opt: struct {
+            upToDate: [*c]bool = null,
+        },
+    ) dtStatus {
+        return _1_dtTileCache_update_(self, dt, navmesh, __opt.upToDate);
+    }
+
+    extern fn _1_dtTileCache_buildNavMeshTilesAt_(self: *dtTileCache, tx: c_int, ty: c_int, navmesh: [*c]dtNavMesh) dtStatus;
+    pub const buildNavMeshTilesAt = _1_dtTileCache_buildNavMeshTilesAt_;
+
+    extern fn _1_dtTileCache_buildNavMeshTile_(self: *dtTileCache, ref: dtCompressedTileRef, navmesh: [*c]dtNavMesh) dtStatus;
+    pub const buildNavMeshTile = _1_dtTileCache_buildNavMeshTile_;
 
     extern fn _1_dtTileCache_calcTightTileBounds_(self: *const dtTileCache, header: [*c]const dtTileCacheLayerHeader, bmin: [*c]f32, bmax: [*c]f32) void;
     pub const calcTightTileBounds = _1_dtTileCache_calcTightTileBounds_;
