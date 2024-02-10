@@ -51,26 +51,34 @@ pub fn package(
     };
 }
 
+fn buildDemoExe(b: *std.Build, target: std.zig.CrossTarget, optimize: std.builtin.Mode) void {
+    const exe = b.addExecutable(.{
+        .name = "RecastDemo",
+        .root_source_file = .{ .path = thisDir() ++ "/zigsrc/demo_recast.zig" },
+        .target = target,
+        .optimize = optimize,
+    });
+
+    const zignav_pkg = package(b, target, optimize, .{});
+    exe.addModule("zignav", zignav_pkg.zig_recastnavigation);
+    zignav_pkg.link(exe);
+
+    b.installArtifact(exe);
+
+    const run_cmd = b.addRunArtifact(exe);
+    if (b.args) |args| {
+        run_cmd.addArgs(args);
+    }
+
+    const run_step = b.step("run", "Run the app");
+    run_step.dependOn(&run_cmd.step);
+}
+
 pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
     const target = b.standardTargetOptions(.{});
 
-    const test_step = b.step("test", "Run zig_recastnavigation tests");
-    test_step.dependOn(runTests(b, optimize, target));
-}
-
-pub fn runTests(
-    b: *std.Build,
-    optimize: std.builtin.Mode,
-    target: std.zig.CrossTarget,
-) *std.Build.Step {
-    const tests = b.addTest(.{
-        .name = "zig_recastnavigation-tests",
-        .root_source_file = .{ .path = thisDir() ++ "/main.zig" },
-        .target = target,
-        .optimize = optimize,
-    });
-    return &b.addRunArtifact(tests).step;
+    buildDemoExe(b, target, optimize);
 }
 
 inline fn thisDir() []const u8 {

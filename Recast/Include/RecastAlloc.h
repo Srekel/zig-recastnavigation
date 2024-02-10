@@ -235,7 +235,7 @@ void rcVectorBase<T, H>::resize_impl(rcSizeType size, const T* value) {
 	} else if (size > m_size) {
 		if (size <= m_cap) {
 			if (value) {
-				construct_range(m_data + m_size, m_data + size, *value);
+				construct_range_and_set(m_data + m_size, m_data + size, *value);
 			} else {
 				construct_range(m_data + m_size, m_data + size);
 			}
@@ -246,7 +246,7 @@ void rcVectorBase<T, H>::resize_impl(rcSizeType size, const T* value) {
 			// We defer deconstructing/freeing old data until after constructing
 			// new elements in case "value" is there.
 			if (value) {
-				construct_range(new_data + m_size, new_data + size, *value);
+				construct_range_and_set(new_data + m_size, new_data + size, *value);
 			} else {
 				construct_range(new_data + m_size, new_data + size);
 			}
@@ -282,7 +282,7 @@ void rcVectorBase<T, H>::construct_range(T* begin, T* end) {
 }
 // static
 template <typename T, rcAllocHint H>
-void rcVectorBase<T, H>::construct_range(T* begin, T* end, const T& value) {
+void rcVectorBase<T, H>::construct_range_and_set(T* begin, T* end, const T& value) {
 	for (T* p = begin; p < end; p++) {
 		construct_and_set(p, value);
 	}

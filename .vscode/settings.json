@@ -1,0 +1,37 @@
+{
+    "debug.allowBreakpointsEverywhere": true,
+    "cSpell.words": [
+        "FLECS",
+        "gamedev",
+        "gamepad",
+        "zigimg"
+    ],
+    "cSpell.ignorePaths": [
+        "package-lock.json",
+        "node_modules",
+        "vscode-extension",
+        ".git/objects",
+        ".vscode",
+        ".vscode-insiders",
+        "external"
+    ],
+    "files.eol": "\n",
+    "files.associations": {
+        "*.shader": "cpp",
+        "*.cdb": "json",
+        "functional": "cpp",
+        "xutility": "cpp"
+    },
+    "search.exclude": {
+        "external/zig-gamedev/libs/zgpu/*": true,
+        "external/zig-gamedev/libs/zopengl/*": true,
+        "external/zig-gamedev/libs/zbullet/*": true,
+        // "external/zig-gamedev/libs/zphysics/**/*.cpp": true,
+        "**/zig-cache/*": true,
+    },
+    "explorer.excludeGitIgnore": false,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "editor.formatOnSave": true
+}

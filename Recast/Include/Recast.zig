@@ -6,7 +6,9 @@ extern const _1_RC_PI_: *const f32;
 pub const RC_PI = _1_RC_PI_;
 
 /// Used to ignore unused function parameters and silence any compiler warnings.
-pub fn rcIgnoreUnused(comptime T: anytype, arg_0: *const T) void {}
+pub fn rcIgnoreUnused(comptime T: anytype, arg_0: *const T) void {
+    _ = arg_0;
+}
 
 /// Recast log categories.
 /// @see rcContext
@@ -1403,6 +1405,7 @@ extern fn _1_rcGetDirOffsetX_(direction: c_int) c_int;
 pub const rcGetDirOffsetX = _1_rcGetDirOffsetX_;
 
 extern fn _1_rcGetDirOffsetY_(direction: c_int) c_int;
+/// TODO (graham): Rename this to rcGetDirOffsetZ
 /// Gets the standard height (z-axis) offset for the specified direction.
 /// @param[in] direction 		The direction. [Limits: 0
 ///<
