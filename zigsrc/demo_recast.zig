@@ -31,8 +31,8 @@ pub fn main() !void {
     var heightfield = Recast.rcAllocHeightfield();
     var compact_heightfield = Recast.rcAllocCompactHeightfield();
     var contour_set = Recast.rcAllocContourSet();
-    var poly_mesh = Recast.rcAllocPolyMesh();
-    var poly_mesh_detail = Recast.rcAllocPolyMeshDetail();
+    const poly_mesh = Recast.rcAllocPolyMesh();
+    const poly_mesh_detail = Recast.rcAllocPolyMeshDetail();
     if (heightfield == null or
         compact_heightfield == null or
         contour_set == null or

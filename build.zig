@@ -2,22 +2,22 @@ const std = @import("std");
 
 pub const Package = struct {
     zig_recastnavigation: *std.Build.Module,
-    zig_recastnavigation_c_cpp: *std.Build.CompileStep,
+    zig_recastnavigation_c_cpp: *std.Build.Step.Compile,
 
-    pub fn link(pkg: Package, exe: *std.Build.CompileStep) void {
-        exe.addModule("zig_recastnavigation", pkg.zig_recastnavigation);
+    pub fn link(pkg: Package, exe: *std.Build.Step.Compile) void {
+        exe.root_module.addImport("zig_recastnavigation", pkg.zig_recastnavigation);
         exe.linkLibrary(pkg.zig_recastnavigation_c_cpp);
     }
 };
 
 pub fn package(
     b: *std.Build,
-    target: std.zig.CrossTarget,
+    target: std.Build.ResolvedTarget,
     optimize: std.builtin.Mode,
     _: struct {},
 ) Package {
     const zig_recastnavigation = b.createModule(.{
-        .source_file = .{ .path = thisDir() ++ "/main.zig" },
+        .root_source_file = .{ .path = thisDir() ++ "/main.zig" },
     });
 
     const zig_recastnavigation_c_cpp = b.addStaticLibrary(.{
@@ -51,7 +51,7 @@ pub fn package(
     };
 }
 
-fn buildDemoExe(b: *std.Build, target: std.zig.CrossTarget, optimize: std.builtin.Mode) void {
+fn buildDemoExe(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.Mode) void {
     const exe = b.addExecutable(.{
         .name = "RecastDemo",
         .root_source_file = .{ .path = thisDir() ++ "/zigsrc/demo_recast.zig" },
@@ -60,7 +60,7 @@ fn buildDemoExe(b: *std.Build, target: std.zig.CrossTarget, optimize: std.builti
     });
 
     const zignav_pkg = package(b, target, optimize, .{});
-    exe.addModule("zignav", zignav_pkg.zig_recastnavigation);
+    exe.root_module.addImport("zignav", zignav_pkg.zig_recastnavigation);
     zignav_pkg.link(exe);
 
     b.installArtifact(exe);

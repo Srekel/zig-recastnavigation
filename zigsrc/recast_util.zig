@@ -72,7 +72,7 @@ pub fn rasterizePolygonSoup(
     const vertices_count = vertices.len / 3;
     const triangle_count = triangles.len / 3;
 
-    var allocator = std.heap.page_allocator;
+    const allocator = std.heap.page_allocator;
     var triangle_areas = std.ArrayList(u8).init(allocator);
     triangle_areas.appendNTimes(0, triangle_count) catch unreachable;
 

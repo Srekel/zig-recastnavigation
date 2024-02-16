@@ -660,7 +660,7 @@ pub const RC_NOT_CONNECTED = _1_RC_NOT_CONNECTED_;
 /// @param[in,out] a 	Value A
 /// @param[in,out] b 	Value B
 pub inline fn rcSwap(comptime T: anytype, a: *T, b: *T) void {
-    var t: T = a;
+    const t: T = a;
     a = b;
     b = t;
 }
