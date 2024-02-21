@@ -26,7 +26,7 @@
                 "$gcc"
             ],
             "options": {
-                "cwd": "${workspaceFolder}/external/c2z/"
+                "cwd": "${workspaceFolder}/../c2z/"
             },
             "presentation": {
                 "clear": true,

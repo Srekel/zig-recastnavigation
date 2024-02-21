@@ -19,21 +19,22 @@
             "preLaunchTask": "build"
         },
         {
-            "name": "c2z",
+            "name": "Build bindings (c2z)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "../../../c2z/zig-out/bin/c2z.exe",
+            "program": "${workspaceFolder}/../c2z/zig-out/bin/c2z.exe",
             "args": [
                 "-output-ast",
-                "-IDetour/include",
+                "-I../../Detour/include",
                 "DetourTileCache.h",
                 // "RecastAlloc.h",
             ],
             "stopAtEntry": false,
-            // "cwd": "${workspaceFolder}/external/zig-recastnavigation/DetourTileCache/include/",
-            "cwd": "${workspaceFolder}/Recast/include/",
+            "cwd": "${workspaceFolder}/DetourTileCache/include/",
+            // "cwd": "${workspaceFolder}/Recast/include/",
+            // "cwd": "${workspaceFolder}/Detour/include/",
             "environment": [],
-            "preLaunchTask": "build_c2z"
+            // "preLaunchTask": "build_c2z"
         },
     ]
 }
