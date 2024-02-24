@@ -16,10 +16,10 @@
             "cwd": "${workspaceFolder}",
             // "cwd": "${workspaceFolder}/zig-out/bin",
             "environment": [],
-            "preLaunchTask": "build"
+            "preLaunchTask": "build_demo"
         },
         {
-            "name": "Build bindings (c2z)",
+            "name": "Generate single binding (c2z)",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/../c2z/zig-out/bin/c2z.exe",
@@ -34,7 +34,18 @@
             // "cwd": "${workspaceFolder}/Recast/include/",
             // "cwd": "${workspaceFolder}/Detour/include/",
             "environment": [],
-            // "preLaunchTask": "build_c2z"
+            "preLaunchTask": "build_c2z"
+        },
+        {
+            "name": "Generate full bindings (c2z)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/generate_bindings_c2z.py",
+            "args": [
+                // "../c2z/zig-out/bin/c2z",
+            ],
+            // "cwd": "${workspaceFolder}/Detour/include/",
+            "preLaunchTask": "build_c2z"
         },
     ]
 }

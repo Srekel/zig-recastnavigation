@@ -10,20 +10,55 @@ class Header:
 
 
 headers = [
-    # os.path.join("zig-recastnavigation", "Recast", "Include", "Recast.h"),
-    # os.path.join("zig-recastnavigation", "Recast", "Include", "RecastAlloc.h"),
-    # os.path.join("zig-recastnavigation", "Recast", "Include", "RecastAssert.h"),
+    ###
+    ### RECAST
+    ###
     Header(
         os.path.join("Recast", "Include", "Recast.h"),
+    ),
+    # Header(
+    #     os.path.join("Recast", "Include", "RecastAlloc.h"),
+    # ),
+    # Header(
+    #     os.path.join("Recast", "Include", "RecastAssert.h"),
+    # ),
+    ###
+    ### DETOUR
+    ###
+    Header(
+        os.path.join("Detour", "Include", "DetourAlloc.h"),
+    ),
+    Header(
+        os.path.join("Detour", "Include", "DetourAssert.h"),
     ),
     Header(
         os.path.join("Detour", "Include", "DetourCommon.h"),
     ),
+    # Header(
+    #     No need to bind this I think.
+    #     os.path.join("Detour", "Include", "DetourMath.h"),
+    # ),
+    Header(
+        os.path.join("Detour", "Include", "DetourNavMesh.h"),
+    ),
+    Header(
+        os.path.join("Detour", "Include", "DetourNavMeshBuilder.h"),
+    ),
+    Header(
+        os.path.join("Detour", "Include", "DetourNavMeshQuery.h"),
+    ),
+    Header(
+        os.path.join("Detour", "Include", "DetourNode.h"),
+    ),
+    Header(
+        os.path.join("Detour", "Include", "DetourStatus.h"),
+    ),
+    ###
+    ### DETOUR TILE CACHE
+    ###
     Header(
         os.path.join("DetourTileCache", "Include", "DetourTileCache.h"),
-        [
-            os.path.join("..", "..", "Detour", "Include"),
-        ],
+        [os.path.join("..", "..", "Detour", "Include")],
     ),
 ]
 
@@ -91,7 +126,9 @@ def build_c2z():
 
 if __name__ == "__main__":
     # Default to Tides of Revival's setup
-    c2z_exe_path = os.path.join(os.getcwd(), "..", "c2z", "zig-out", "bin", "c2z")
+    c2z_exe_path = os.path.abspath(
+        os.path.join(os.getcwd(), "..", "c2z", "zig-out", "bin", "c2z")
+    )
     if len(sys.argv) > 1:
         c2z_exe_path = sys.argv[1]
 
