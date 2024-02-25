@@ -3,6 +3,9 @@ const math = std.math;
 const zignav = @import("zignav");
 const Recast = zignav.Recast;
 
+// For more on all this, see here:
+// https://recastnav.com/md_Docs__1_Introducation.html
+
 pub const GameConfig = struct {
     character_height: f32 = 2.0,
     character_radius: f32 = 0.4,
@@ -42,8 +45,6 @@ pub fn generateConfig(game_config: GameConfig) Recast.rcConfig {
         .detailSampleMaxError = 1, // taken from other recast samples
     };
 
-    Recast.rcCalcGridSize(&config.bmin, &config.bmax, config.cs, &config.width, &config.height);
-    Recast.rcCalcGridSize(&config.bmin, &config.bmax, config.cs, &config.width, &config.height);
     Recast.rcCalcGridSize(&config.bmin, &config.bmax, config.cs, &config.width, &config.height);
 
     return config;
@@ -182,4 +183,41 @@ pub fn buildPolygonMesh(
         // nav_ctx.log(RC_LOG_ERROR, "buildNavigation: Could not build detail mesh.");
         return;
     }
+}
+
+pub fn buildFullNavMesh(
+    config: Recast.rcConfig,
+    nav_ctx: *Recast.rcContext,
+    vertices: []const f32,
+    triangles: []const i32,
+    heightfield: *Recast.rcHeightfield,
+    compact_heightfield: *Recast.rcCompactHeightfield,
+    contour_set: *Recast.rcContourSet,
+    poly_mesh: *Recast.rcPolyMesh,
+    poly_mesh_detail: *Recast.rcPolyMeshDetail,
+) !void {
+    try rasterizePolygonSoup(config, nav_ctx, heightfield, vertices, triangles);
+
+    try partitionWalkableSurfaceToRegions(config, nav_ctx, heightfield, compact_heightfield);
+
+    if (!Recast.rcBuildContours(
+        nav_ctx,
+        compact_heightfield,
+        config.maxSimplificationError,
+        config.maxEdgeLen,
+        contour_set,
+        .{},
+    )) {
+        // nav_ctx.log(RC_LOG_ERROR, "buildNavigation: Could not create contours.");
+        return error.BuildContours;
+    }
+
+    try buildPolygonMesh(
+        config,
+        nav_ctx,
+        contour_set,
+        compact_heightfield,
+        poly_mesh,
+        poly_mesh_detail,
+    );
 }

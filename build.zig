@@ -54,7 +54,7 @@ pub fn package(
 fn buildDemoExe(b: *std.Build, target: std.Build.ResolvedTarget, optimize: std.builtin.Mode) void {
     const exe = b.addExecutable(.{
         .name = "RecastDemo",
-        .root_source_file = .{ .path = thisDir() ++ "/zigsrc/demo_recast.zig" },
+        .root_source_file = .{ .path = thisDir() ++ "/zigsrc/demo.zig" },
         .target = target,
         .optimize = optimize,
     });

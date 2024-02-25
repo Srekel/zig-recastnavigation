@@ -28,9 +28,9 @@ pub fn run_demo() !void {
         1, 2, 3,
     };
 
-    var heightfield = Recast.rcAllocHeightfield();
-    var compact_heightfield = Recast.rcAllocCompactHeightfield();
-    var contour_set = Recast.rcAllocContourSet();
+    const heightfield = Recast.rcAllocHeightfield();
+    const compact_heightfield = Recast.rcAllocCompactHeightfield();
+    const contour_set = Recast.rcAllocContourSet();
     const poly_mesh = Recast.rcAllocPolyMesh();
     const poly_mesh_detail = Recast.rcAllocPolyMeshDetail();
     if (heightfield == null or
@@ -48,48 +48,19 @@ pub fn run_demo() !void {
     defer Recast.rcFreePolyMesh(poly_mesh);
     defer Recast.rcFreePolyMeshDetail(poly_mesh_detail);
 
-    // Allocations completed, start work
-
-    try recast_util.rasterizePolygonSoup(config, &nav_ctx, heightfield, &vertices, &triangles);
-
-    try recast_util.partitionWalkableSurfaceToRegions(config, &nav_ctx, heightfield, compact_heightfield);
-
-    // Will get freed by defer but we *can* do it at this point.
-    Recast.rcFreeHeightField(heightfield);
-    heightfield = null;
-
-    if (!Recast.rcBuildContours(
-        &nav_ctx,
-        compact_heightfield,
-        config.maxSimplificationError,
-        config.maxEdgeLen,
-        contour_set,
-        .{},
-    )) {
-        // &nav_ctx.log(RC_LOG_ERROR, "buildNavigation: Could not create contours.");
-        return error.BuildContours;
-    }
-
-    try recast_util.buildPolygonMesh(
+    try recast_util.buildFullNavMesh(
         config,
         &nav_ctx,
-        contour_set,
+        &vertices,
+        &triangles,
+        heightfield,
         compact_heightfield,
+        contour_set,
         poly_mesh,
         poly_mesh_detail,
     );
 
-    // Can free these at this point.
-    Recast.rcFreeCompactHeightfield(compact_heightfield);
-    compact_heightfield = null;
-    Recast.rcFreeContourSet(contour_set);
-    contour_set = null;
-
     nav_ctx.stopTimer(Recast.rcTimerLabel.RC_TIMER_TOTAL);
-
-    // Show performance stats.
-    // duLogBuildTimes(*&nav_ctx, &nav_ctx.getAccumulatedTime(Recast.rcTimerLabel.RC_TIMER_TOTAL));
-    // &nav_ctx.log(RC_LOG_PROGRESS, ">> Polymesh: %d vertices  %d polygons", m_pmesh->nverts, m_pmesh->npolys);
 
     const total_build_time = nav_ctx.getAccumulatedTime(Recast.rcTimerLabel.RC_TIMER_TOTAL);
     _ = total_build_time;
