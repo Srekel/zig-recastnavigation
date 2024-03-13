@@ -7,7 +7,7 @@ pub const RC_PI = _1_RC_PI_;
 
 /// Used to ignore unused function parameters and silence any compiler warnings.
 pub fn rcIgnoreUnused(comptime T: anytype, arg_0: *const T) void {
-    _ = arg_0;
+    _ = arg_0; // autofix
 }
 
 /// Recast log categories.
@@ -238,7 +238,7 @@ pub const RC_SPANS_PER_POOL = _1_RC_SPANS_PER_POOL_;
 /// Represents a span in a heightfield.
 /// @see rcHeightfield
 pub const rcSpan = extern struct {
-    field_1: packed struct(u32) {
+    bitfield_1: packed struct(u32) {
         /// The lower limit of the span. [Limit:
         ///<
         /// #smax]
@@ -250,6 +250,7 @@ pub const rcSpan = extern struct {
         /// The area id assigned to the span.
         area: u6,
     },
+
     /// The next span higher up in column.
     next: [*c]rcSpan,
 };
@@ -294,7 +295,7 @@ pub const rcHeightfield = extern struct {
 
 /// Provides information on the content of a cell column in a compact heightfield.
 pub const rcCompactCell = extern struct {
-    field_1: packed struct(u32) {
+    bitfield_1: packed struct(u32) {
         /// Index to the first span in the column.
         index: u24,
         /// Number of spans in the column.
@@ -308,7 +309,7 @@ pub const rcCompactSpan = extern struct {
     y: c_ushort,
     /// The id of the region the span belongs to. (Or zero if not in a region.)
     reg: c_ushort,
-    field_1: packed struct(u32) {
+    bitfield_1: packed struct(u32) {
         /// Packed neighbor connection data.
         con: u24,
         /// The height of the span.  (Measured from #y.)
@@ -1102,29 +1103,28 @@ pub fn rcRasterizeTriangles__Overload3(
 extern fn _1_rcFilterLowHangingWalkableObstacles_(context: [*c]rcContext, walkableClimb: c_int, heightfield: *rcHeightfield) void;
 /// Marks non-walkable spans as walkable if their maximum is within
 ///@p
-/// of a walkable neighbor.
+/// of the span below them.
 ///
-/// Allows the formation of walkable regions that will flow over low lying
-/// objects such as curbs, and up structures such as stairways.
+/// This removes small obstacles and rasterization artifacts that the agent would be able to walk over
+/// such as curbs.  It also allows agents to move up terraced structures like stairs.
 ///
-/// Two neighboring spans are walkable if:
+/// Obstacle spans are marked walkable if:
 ///
-///rcAbs(currentSpan.smax - neighborSpan.smax)
+///obstacleSpan.smax - walkableSpan.smax
 ///<
 /// walkableClimb
 ///
 ///
-/// @see Will override the effect of #rcFilterLedgeSpans.  So if both filters are used, call
-/// #rcFilterLedgeSpans after calling this filter.
+/// @see Will override the effect of #rcFilterLedgeSpans.  If both filters are used, call #rcFilterLedgeSpans only after applying this filter.
 ///
 /// @see rcHeightfield, rcConfig
 ///
 /// @UntranspiledVerbatimLineCommentCommand recast
 ///
-/// @param[in,out] context 				The build context to use during the operation.
+/// @param[in,out] context 			The build context to use during the operation.
 /// @param[in] walkableClimb 	Maximum ledge height that is considered to still be traversable.
 /// 								[Limit: >=0] [Units: vx]
-/// @param[in,out] heightfield 			A fully built heightfield.  (All spans have been added.)
+/// @param[in,out] heightfield 		A fully built heightfield.  (All spans have been added.)
 pub const rcFilterLowHangingWalkableObstacles = _1_rcFilterLowHangingWalkableObstacles_;
 
 extern fn _1_rcFilterLedgeSpans_(context: [*c]rcContext, walkableHeight: c_int, walkableClimb: c_int, heightfield: *rcHeightfield) void;
@@ -1154,10 +1154,12 @@ extern fn _1_rcFilterLedgeSpans_(context: [*c]rcContext, walkableHeight: c_int, 
 pub const rcFilterLedgeSpans = _1_rcFilterLedgeSpans_;
 
 extern fn _1_rcFilterWalkableLowHeightSpans_(context: [*c]rcContext, walkableHeight: c_int, heightfield: *rcHeightfield) void;
-/// Marks walkable spans as not walkable if the clearance above the span is less than the specified height.
+/// Marks walkable spans as not walkable if the clearance above the span is less than the specified walkableHeight.
 ///
 /// For this filter, the clearance above the span is the distance from the span's
-/// maximum to the next higher span's minimum. (Same grid column.)
+/// maximum to the minimum of the next higher span in the same column.
+/// If there is no higher span in the column, the clearance is computed as the
+/// distance from the top of the span to the maximum heightfield height.
 ///
 /// @see rcHeightfield, rcConfig
 /// @UntranspiledVerbatimLineCommentCommand recast

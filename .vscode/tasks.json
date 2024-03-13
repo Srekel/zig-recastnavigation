@@ -12,6 +12,9 @@
             "problemMatcher": [
                 "$gcc"
             ],
+            "options": {
+                "cwd": "${workspaceFolder}/zigsrc/"
+            },
             "presentation": {
                 "clear": true,
                 // "revealProblems": "onProblem"
