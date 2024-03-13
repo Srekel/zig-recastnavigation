@@ -2,17 +2,6 @@
 const std = @import("std");
 //const cpp = @import("cpp");
 
-// MANUAL ADDITIONS BEGIN
-const DetourNavMesh = @import("DetourNavMesh.zig");
-const DetourStatus = @import("DetourStatus.zig");
-
-const dtMeshTile = DetourNavMesh.dtMeshTile;
-const dtNavMesh = DetourNavMesh.dtNavMesh;
-const dtPoly = DetourNavMesh.dtPoly;
-const dtPolyRef = DetourNavMesh.dtPolyRef;
-const dtStatus = DetourStatus.dtStatus;
-// MANUAL ADDITIONS END
-
 /// Defines polygon filtering and traversal costs for navigation mesh query operations.
 /// @UntranspiledVerbatimLineCommentCommand detour
 pub const dtQueryFilter = extern struct {

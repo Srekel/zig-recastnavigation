@@ -356,20 +356,20 @@ pub const dtNavMesh = extern struct {
     extern fn _1_dtNavMesh_deinit_(self: *dtNavMesh) void;
     pub const deinit = _1_dtNavMesh_deinit_;
 
-    extern fn _1_dtNavMesh_init_(self: *dtNavMesh, params: [*c]const dtNavMeshParams) dtStatus;
+    extern fn _2_dtNavMesh_init_(self: *dtNavMesh, params: [*c]const dtNavMeshParams) dtStatus;
     /// Initializes the navigation mesh for tiled use.
     ///  @param[in] params 		Initialization parameters.
     /// @see The status flags for the operation.
-    pub const init = _1_dtNavMesh_init_;
+    pub const init__Overload2 = _2_dtNavMesh_init_;
 
-    extern fn _2_dtNavMesh_init_(self: *dtNavMesh, data: [*c]u8, dataSize: c_int, flags: c_int) dtStatus;
+    extern fn _3_dtNavMesh_init_(self: *dtNavMesh, data: [*c]u8, dataSize: c_int, flags: c_int) dtStatus;
     /// Initializes the navigation mesh for single tile use.
     ///  @param[in] data 		Data of the new tile. (See: #dtCreateNavMeshData)
     ///  @param[in] dataSize 	The data size of the new tile.
     ///  @param[in] flags 		The tile flags. (See: #dtTileFlags)
     /// @see The status flags for the operation.
     ///  @see dtCreateNavMeshData
-    pub const init__Overload2 = _2_dtNavMesh_init_;
+    pub const init__Overload3 = _3_dtNavMesh_init_;
 
     extern fn _1_dtNavMesh_getParams_(self: *const dtNavMesh) [*c]const dtNavMeshParams;
     /// The navigation mesh initialization params.

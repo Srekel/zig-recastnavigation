@@ -9,7 +9,7 @@ extern "C" void _1_dtTileCache_init_(::dtTileCache* self) { new (self) ::dtTileC
 extern "C" void _1_dtTileCache_deinit_(::dtTileCache *self) { self->~dtTileCache(); }
 extern "C" const dtTileCacheObstacle * _1_dtTileCache_getObstacleByRef_(::dtTileCache* self, dtObstacleRef ref) { return self->getObstacleByRef(ref); }
 extern "C" dtObstacleRef _1_dtTileCache_getObstacleRef_(const ::dtTileCache *self, const dtTileCacheObstacle * obmin) { return self->getObstacleRef(obmin); }
-extern "C" dtStatus _1_dtTileCache_init_(::dtTileCache* self, const dtTileCacheParams * params, struct dtTileCacheAlloc * talloc, struct dtTileCacheCompressor * tcomp, struct dtTileCacheMeshProcess * tmproc) { return self->init(params, talloc, tcomp, tmproc); }
+extern "C" dtStatus _2_dtTileCache_init_(::dtTileCache* self, const dtTileCacheParams * params, struct dtTileCacheAlloc * talloc, struct dtTileCacheCompressor * tcomp, struct dtTileCacheMeshProcess * tmproc) { return self->init(params, talloc, tcomp, tmproc); }
 extern "C" int _1_dtTileCache_getTilesAt_(const ::dtTileCache *self, const int tx, const int ty, dtCompressedTileRef * tiles, const int maxTiles) { return self->getTilesAt(tx, ty, tiles, maxTiles); }
 extern "C" dtCompressedTile * _1_dtTileCache_getTileAt_(::dtTileCache* self, const int tx, const int ty, const int tlayer) { return self->getTileAt(tx, ty, tlayer); }
 extern "C" dtCompressedTileRef _1_dtTileCache_getTileRef_(const ::dtTileCache *self, const dtCompressedTile * tile) { return self->getTileRef(tile); }

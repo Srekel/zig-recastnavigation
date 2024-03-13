@@ -1,6 +1,8 @@
 const std = @import("std");
 const zignav = @import("zignav");
 const Recast = zignav.Recast;
+const DetourNavMesh = zignav.DetourNavMesh;
+const DetourNavMeshQuery = zignav.DetourNavMeshQuery;
 const recast_util = @import("recast_util.zig");
 
 pub fn run_demo() !void {
@@ -61,6 +63,10 @@ pub fn run_demo() !void {
     );
 
     nav_ctx.stopTimer(Recast.rcTimerLabel.RC_TIMER_TOTAL);
+
+    // var start_ref: DetourNavMesh.dtPolyRef = undefined;
+    // var end_ref: DetourNavMesh.dtPolyRef = undefined;
+    // var query: DetourNavMeshQuery.dtNavMeshQuery = undefined;
 
     const total_build_time = nav_ctx.getAccumulatedTime(Recast.rcTimerLabel.RC_TIMER_TOTAL);
     _ = total_build_time;

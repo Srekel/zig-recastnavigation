@@ -77,12 +77,7 @@ extern const _1_DT_MAX_TOUCHED_TILES_: *const c_int;
 pub const DT_MAX_TOUCHED_TILES = _1_DT_MAX_TOUCHED_TILES_;
 
 pub const dtTileCacheObstacle = extern struct {
-    __field0: extern union {
-        cylinder: dtObstacleCylinder,
-        box: dtObstacleBox,
-        orientedBox: dtObstacleOrientedBox,
-    },
-
+    __union_field1: __Union0,
     touched: [8]dtCompressedTileRef,
     pending: [8]dtCompressedTileRef,
     salt: c_ushort,
@@ -91,6 +86,12 @@ pub const dtTileCacheObstacle = extern struct {
     ntouched: u8,
     npending: u8,
     next: [*c]dtTileCacheObstacle,
+
+    pub const __Union0 = extern union {
+        cylinder: dtObstacleCylinder,
+        box: dtObstacleBox,
+        orientedBox: dtObstacleOrientedBox,
+    };
 };
 
 pub const dtTileCacheParams = extern struct {
@@ -129,11 +130,6 @@ pub const dtTileCache = extern struct {
         pub const REQUEST_REMOVE: ObstacleRequestAction = .{ .bits = 1 };
 
         // pub usingnamespace cpp.FlagsMixin(ObstacleRequestAction);
-    };
-
-    pub const ObstacleRequest = extern struct {
-        action: c_int,
-        ref: dtObstacleRef,
     };
 
     /// Tile hash lookup size (must be pot).
@@ -194,8 +190,8 @@ pub const dtTileCache = extern struct {
     extern fn _1_dtTileCache_getObstacleRef_(self: *const dtTileCache, obmin: [*c]const dtTileCacheObstacle) dtObstacleRef;
     pub const getObstacleRef = _1_dtTileCache_getObstacleRef_;
 
-    extern fn _1_dtTileCache_init_(self: *dtTileCache, params: [*c]const dtTileCacheParams, talloc: [*c]dtTileCacheAlloc, tcomp: [*c]dtTileCacheCompressor, tmproc: [*c]dtTileCacheMeshProcess) dtStatus;
-    pub const init = _1_dtTileCache_init_;
+    extern fn _2_dtTileCache_init_(self: *dtTileCache, params: [*c]const dtTileCacheParams, talloc: [*c]dtTileCacheAlloc, tcomp: [*c]dtTileCacheCompressor, tmproc: [*c]dtTileCacheMeshProcess) dtStatus;
+    pub const init__Overload2 = _2_dtTileCache_init_;
 
     extern fn _1_dtTileCache_getTilesAt_(self: *const dtTileCache, tx: c_int, ty: c_int, tiles: [*c]dtCompressedTileRef, maxTiles: c_int) c_int;
     pub const getTilesAt = _1_dtTileCache_getTilesAt_;
@@ -286,6 +282,11 @@ pub const dtTileCache = extern struct {
     extern fn _1_dtTileCache_decodeObstacleIdObstacle_(self: *const dtTileCache, ref: dtObstacleRef) c_uint;
     /// Decodes an obstacle id.
     pub const decodeObstacleIdObstacle = _1_dtTileCache_decodeObstacleIdObstacle_;
+
+    pub const ObstacleRequest = extern struct {
+        action: c_int,
+        ref: dtObstacleRef,
+    };
 
     extern const _1_dtTileCache_MAX_REQUESTS_: *const c_int;
     pub const MAX_REQUESTS = _1_dtTileCache_MAX_REQUESTS_;

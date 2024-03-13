@@ -25,14 +25,14 @@
             "program": "${workspaceFolder}/../c2z/zig-out/bin/c2z.exe",
             "args": [
                 "-output-ast",
-                "-I../../Detour/include",
-                "DetourTileCache.h",
+                // "-I../../Detour/include",
+                "DetourNavMeshQuery.h",
                 // "RecastAlloc.h",
             ],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/DetourTileCache/include/",
             // "cwd": "${workspaceFolder}/Recast/include/",
-            // "cwd": "${workspaceFolder}/Detour/include/",
+            "cwd": "${workspaceFolder}/Detour/include/",
+            // "cwd": "${workspaceFolder}/DetourTileCache/include/",
             "environment": [],
             "preLaunchTask": "build_c2z"
         },

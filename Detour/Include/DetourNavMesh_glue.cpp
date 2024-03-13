@@ -19,8 +19,8 @@ extern "C" unsigned char _1_dtPoly_getType_(const ::dtPoly *self) { return self-
 extern "C" int _1_dtGetDetailTriEdgeFlags_(unsigned char triFlags, int edgeIndex) { return ::dtGetDetailTriEdgeFlags(triFlags, edgeIndex); }
 extern "C" void _1_dtNavMesh_init_(::dtNavMesh* self) { new (self) ::dtNavMesh(); }
 extern "C" void _1_dtNavMesh_deinit_(::dtNavMesh *self) { self->~dtNavMesh(); }
-extern "C" dtStatus _1_dtNavMesh_init_(::dtNavMesh* self, const dtNavMeshParams * params) { return self->init(params); }
-extern "C" dtStatus _2_dtNavMesh_init_(::dtNavMesh* self, unsigned char * data, const int dataSize, const int flags) { return self->init(data, dataSize, flags); }
+extern "C" dtStatus _2_dtNavMesh_init_(::dtNavMesh* self, const dtNavMeshParams * params) { return self->init(params); }
+extern "C" dtStatus _3_dtNavMesh_init_(::dtNavMesh* self, unsigned char * data, const int dataSize, const int flags) { return self->init(data, dataSize, flags); }
 extern "C" const dtNavMeshParams * _1_dtNavMesh_getParams_(const ::dtNavMesh *self) { return self->getParams(); }
 extern "C" dtStatus _1_dtNavMesh_addTile_(::dtNavMesh* self, unsigned char * data, int dataSize, int flags, dtTileRef lastRef, dtTileRef * result) { return self->addTile(data, dataSize, flags, lastRef, result); }
 extern "C" dtStatus _1_dtNavMesh_removeTile_(::dtNavMesh* self, dtTileRef ref, unsigned char ** data, int * dataSize) { return self->removeTile(ref, data, dataSize); }
