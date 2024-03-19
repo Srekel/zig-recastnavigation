@@ -32,12 +32,14 @@ pub const dtNode = extern struct {
     /// Cost up to the node.
     total: f32,
     bitfield_1: packed struct(u32) {
+        // NOTE: Bitfield generation not guaranteed to work on all platforms, use with caution.
+
         /// Index to parent node.
-        pidx: u24,
+        pidx: u24, // 24 bits
         /// extra state information. A polyRef can have multiple nodes with different extra info. see DT_MAX_STATES_PER_NODE
-        state: u2,
+        state: u2, // 26 bits
         /// Node flags. A combination of dtNodeFlags.
-        flags: u3,
+        flags: u3, // 29 bits
         /// Padding added by c2z
         _dummy_padding: u3,
     },
@@ -98,7 +100,7 @@ pub const dtNodePool = extern struct {
         return &self.m_nodes[idx - @as(c_uint, @intCast(1))];
     }
     pub inline fn getMemUsed(self: *const dtNodePool) c_int {
-        return @as(c_int, @intCast(@sizeOf(self.*) + @sizeOf(dtNode) * @as(c_uint, @intCast(self.m_maxNodes)) + @sizeOf(dtNodeIndex) * @as(c_uint, @intCast(self.m_maxNodes)) + @sizeOf(dtNodeIndex) * @as(c_uint, @intCast(self.m_hashSize))));
+        return @as(c_int, @intCast(@sizeOf(self.*) + @sizeOf(dtNode) * @as(c_ulonglong, @intCast(self.m_maxNodes)) + @sizeOf(dtNodeIndex) * @as(c_ulonglong, @intCast(self.m_maxNodes)) + @sizeOf(dtNodeIndex) * @as(c_ulonglong, @intCast(self.m_hashSize))));
     }
     pub inline fn getMaxNodes(self: *const dtNodePool) c_int {
         return self.m_maxNodes;
@@ -159,7 +161,7 @@ pub const dtNodeQueue = extern struct {
         return self.m_size == 0;
     }
     pub inline fn getMemUsed(self: *const dtNodeQueue) c_int {
-        return @as(c_int, @intCast(@sizeOf(self.*) + @sizeOf([*c]dtNode) * @as(c_uint, @intCast((self.m_capacity + 1)))));
+        return @as(c_int, @intCast(@sizeOf(self.*) + @sizeOf([*c]dtNode) * @as(c_ulonglong, @intCast((self.m_capacity + 1)))));
     }
     pub inline fn getCapacity(self: *const dtNodeQueue) c_int {
         return self.m_capacity;

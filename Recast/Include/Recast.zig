@@ -239,16 +239,18 @@ pub const RC_SPANS_PER_POOL = _1_RC_SPANS_PER_POOL_;
 /// @see rcHeightfield
 pub const rcSpan = extern struct {
     bitfield_1: packed struct(u32) {
+        // NOTE: Bitfield generation not guaranteed to work on all platforms, use with caution.
+
         /// The lower limit of the span. [Limit:
         ///<
         /// #smax]
-        smin: u13,
+        smin: u13, // 13 bits
         /// The upper limit of the span. [Limit:
         ///<
         ///= #RC_SPAN_MAX_HEIGHT]
-        smax: u13,
+        smax: u13, // 26 bits
         /// The area id assigned to the span.
-        area: u6,
+        area: u6, // 32 bits
     },
 
     /// The next span higher up in column.
@@ -296,10 +298,12 @@ pub const rcHeightfield = extern struct {
 /// Provides information on the content of a cell column in a compact heightfield.
 pub const rcCompactCell = extern struct {
     bitfield_1: packed struct(u32) {
+        // NOTE: Bitfield generation not guaranteed to work on all platforms, use with caution.
+
         /// Index to the first span in the column.
-        index: u24,
+        index: u24, // 24 bits
         /// Number of spans in the column.
-        count: u8,
+        count: u8, // 32 bits
     },
 };
 
@@ -310,10 +314,12 @@ pub const rcCompactSpan = extern struct {
     /// The id of the region the span belongs to. (Or zero if not in a region.)
     reg: c_ushort,
     bitfield_1: packed struct(u32) {
+        // NOTE: Bitfield generation not guaranteed to work on all platforms, use with caution.
+
         /// Packed neighbor connection data.
-        con: u24,
+        con: u24, // 24 bits
         /// The height of the span.  (Measured from #y.)
-        h: u8,
+        h: u8, // 32 bits
     },
 };
 

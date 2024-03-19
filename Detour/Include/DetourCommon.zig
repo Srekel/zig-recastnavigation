@@ -5,7 +5,7 @@ const std = @import("std");
 /// Used to ignore a function parameter.  VS complains about unused parameters
 /// and this silences the warning.
 pub fn dtIgnoreUnused(comptime T: anytype, arg_0: *const T) void {
-    _ = arg_0;
+    _ = arg_0; // autofix
 }
 
 /// Swaps the values of the two parameters.
