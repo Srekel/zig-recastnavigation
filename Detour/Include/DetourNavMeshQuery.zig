@@ -2,6 +2,12 @@
 const std = @import("std");
 //const cpp = @import("cpp");
 
+const dtStatus = u32;
+const dtPolyRef = c_uint;
+const dtMeshTile = anyopaque;
+const dtPoly = anyopaque;
+const dtNavMesh = anyopaque;
+
 /// Defines polygon filtering and traversal costs for navigation mesh query operations.
 /// @UntranspiledVerbatimLineCommentCommand detour
 pub const dtQueryFilter = extern struct {

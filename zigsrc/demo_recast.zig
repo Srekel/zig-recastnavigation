@@ -17,15 +17,15 @@ pub fn run_demo() !void {
     nav_ctx.startTimer(Recast.rcTimerLabel.RC_TIMER_TOTAL);
 
     const vertices = [_]f32{
-        0,  0,  0,
-        10, 0,  0,
-        10, 10, 0,
-        0,  10, 0,
+        0,  1, 0,
+        10, 1, 0,
+        10, 1, 10,
+        0,  1, 10,
     };
 
     const triangles = [_]i32{
-        0, 1, 2,
-        1, 2, 3,
+        0, 2, 1,
+        0, 3, 2,
     };
 
     var heightfield = Recast.rcAllocHeightfield();

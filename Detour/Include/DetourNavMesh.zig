@@ -2,6 +2,8 @@
 const std = @import("std");
 //const cpp = @import("cpp");
 
+const dtStatus = u32;
+
 pub const dtPolyRef = c_uint;
 
 pub const dtTileRef = c_uint;

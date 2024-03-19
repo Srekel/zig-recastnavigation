@@ -2,7 +2,9 @@ const std = @import("std");
 const zignav = @import("zignav");
 const Recast = zignav.Recast;
 const DetourNavMesh = zignav.DetourNavMesh;
+const DetourNavMeshBuilder = zignav.DetourNavMeshBuilder;
 const DetourNavMeshQuery = zignav.DetourNavMeshQuery;
+const DetourStatus = zignav.DetourStatus;
 const recast_util = @import("recast_util.zig");
 
 pub fn run_demo() !void {
@@ -19,15 +21,15 @@ pub fn run_demo() !void {
     nav_ctx.startTimer(Recast.rcTimerLabel.RC_TIMER_TOTAL);
 
     const vertices = [_]f32{
-        0,  0,  0,
-        10, 0,  0,
-        10, 10, 0,
-        0,  10, 0,
+        0,  1, 0,
+        10, 1, 0,
+        10, 1, 10,
+        0,  1, 10,
     };
 
     const triangles = [_]i32{
-        0, 1, 2,
-        1, 2, 3,
+        0, 2, 1,
+        0, 3, 2,
     };
 
     const heightfield = Recast.rcAllocHeightfield();
@@ -70,4 +72,54 @@ pub fn run_demo() !void {
 
     const total_build_time = nav_ctx.getAccumulatedTime(Recast.rcTimerLabel.RC_TIMER_TOTAL);
     _ = total_build_time;
+
+    var nav_mesh_params: DetourNavMeshBuilder.dtNavMeshCreateParams = .{
+        .verts = poly_mesh.*.verts,
+        .vertCount = poly_mesh.*.nverts,
+        .polys = poly_mesh.*.polys,
+        .polyAreas = poly_mesh.*.areas,
+        .polyFlags = poly_mesh.*.flags,
+        .polyCount = poly_mesh.*.npolys,
+        .nvp = poly_mesh.*.nvp,
+        .detailMeshes = poly_mesh_detail.*.meshes,
+        .detailVerts = poly_mesh_detail.*.verts,
+        .detailVertsCount = poly_mesh_detail.*.nverts,
+        .detailTris = poly_mesh_detail.*.tris,
+        .detailTriCount = poly_mesh_detail.*.ntris,
+        .offMeshConVerts = undefined,
+        .offMeshConRad = undefined,
+        .offMeshConDir = undefined,
+        .offMeshConAreas = undefined,
+        .offMeshConFlags = undefined,
+        .offMeshConUserID = undefined,
+        .offMeshConCount = 0,
+        .walkableHeight = @floatFromInt(config.walkableHeight),
+        .walkableRadius = @floatFromInt(config.walkableRadius),
+        .walkableClimb = @floatFromInt(config.walkableClimb),
+        .cs = config.cs,
+        .ch = config.ch,
+        .buildBvTree = true,
+        .userId = 0,
+        .tileX = 0,
+        .tileY = 0,
+        .tileLayer = 0,
+        .bmin = .{ 0, 0, 0 },
+        .bmax = .{ 10, 10, 0 },
+    };
+
+    var nav_data: [*c]u8 = null;
+    var nav_data_size: c_int = 0;
+    if (!DetourNavMeshBuilder.dtCreateNavMeshData(&nav_mesh_params, &nav_data, &nav_data_size)) {
+        return error.FailedBuildingDetourMesh;
+    }
+
+    const nav_mesh = DetourNavMesh.dtAllocNavMesh();
+    defer DetourNavMesh.dtFreeNavMesh(nav_mesh);
+
+    const status = nav_mesh.*.init__Overload3(nav_data, nav_data_size, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA.bits);
+    if (DetourStatus.dtStatusFailed(status)) {
+        return error.FailedNavMeshInit;
+    }
+
+    // status =
 }
