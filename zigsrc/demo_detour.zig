@@ -73,6 +73,16 @@ pub fn run_demo() !void {
     const total_build_time = nav_ctx.getAccumulatedTime(Recast.rcTimerLabel.RC_TIMER_TOTAL);
     _ = total_build_time;
 
+    const FLAG_AREA_GROUND = 0;
+    const FLAG_POLY_WALK = 1;
+
+    for (0..@intCast(poly_mesh.*.npolys)) |pi| {
+        if (poly_mesh.*.areas[pi] == Recast.WALKABLE_AREA) {
+            poly_mesh.*.areas[pi] = FLAG_AREA_GROUND;
+            poly_mesh.*.flags[pi] = FLAG_POLY_WALK;
+        }
+    }
+
     var nav_mesh_params: DetourNavMeshBuilder.dtNavMeshCreateParams = .{
         .verts = poly_mesh.*.verts,
         .vertCount = poly_mesh.*.nverts,
@@ -103,8 +113,8 @@ pub fn run_demo() !void {
         .tileX = 0,
         .tileY = 0,
         .tileLayer = 0,
-        .bmin = .{ 0, 0, 0 },
-        .bmax = .{ 10, 10, 0 },
+        .bmin = config.bmin,
+        .bmax = config.bmax,
     };
 
     var nav_data: [*c]u8 = null;
@@ -116,10 +126,41 @@ pub fn run_demo() !void {
     const nav_mesh = DetourNavMesh.dtAllocNavMesh();
     defer DetourNavMesh.dtFreeNavMesh(nav_mesh);
 
-    const status = nav_mesh.*.init__Overload3(nav_data, nav_data_size, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA.bits);
+    var status = nav_mesh.*.init__Overload3(nav_data, nav_data_size, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA.bits);
     if (DetourStatus.dtStatusFailed(status)) {
         return error.FailedNavMeshInit;
     }
 
-    // status =
+    const query = DetourNavMeshQuery.dtAllocNavMeshQuery();
+    const max_nodes = 2048; // as per solomesh sample
+    status = query.*.init__Overload2(nav_mesh, max_nodes);
+    if (DetourStatus.dtStatusFailed(status)) {
+        return error.FailedNavQueryInit;
+    }
+
+    var filter: DetourNavMeshQuery.dtQueryFilter = undefined;
+    filter.init();
+
+    var start_ref: DetourNavMesh.dtPolyRef = undefined;
+    var end_ref: DetourNavMesh.dtPolyRef = undefined;
+    var nearest_point = [3]f32{ 0, 0, 0 };
+    status = query.*.findNearestPoly(&[3]f32{ 1, 1, 1 }, &[3]f32{ 2, 2, 2 }, &filter, &start_ref, &nearest_point);
+
+    if (DetourStatus.dtStatusFailed(status)) {
+        return error.FailedNavQueryPoly;
+    }
+
+    status = query.*.findNearestPoly(&[3]f32{ 9, 1, 9 }, &[3]f32{ 2, 2, 2 }, &filter, &end_ref, &nearest_point);
+
+    if (DetourStatus.dtStatusFailed(status)) {
+        return error.FailedNavQueryPoly;
+    }
+
+    var path: [100]DetourNavMesh.dtPolyRef = undefined;
+    var path_count: c_int = undefined;
+
+    status = query.*.findPath(start_ref, end_ref, &[3]f32{ 1, 1, 1 }, &[3]f32{ 9, 1, 9 }, &filter, &path, &path_count, path.len);
+    if (DetourStatus.dtStatusFailed(status)) {
+        return error.FailedNavQueryPath;
+    }
 }

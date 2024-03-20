@@ -48,6 +48,7 @@ extern "C" const void *_1_RC_CONTOUR_REG_MASK_ = (void *)&::RC_CONTOUR_REG_MASK;
 extern "C" const void *_1_RC_MESH_NULL_IDX_ = (void *)&::RC_MESH_NULL_IDX;
 extern "C" const void *_1_RC_NULL_AREA_ = (void *)&::RC_NULL_AREA;
 extern "C" const void *_1_RC_WALKABLE_AREA_ = (void *)&::RC_WALKABLE_AREA;
+extern "C" const unsigned char WALKABLE_AREA = RC_WALKABLE_AREA;
 extern "C" const void *_1_RC_NOT_CONNECTED_ = (void *)&::RC_NOT_CONNECTED;
 extern "C" float _1_rcSqrt_(float x) { return ::rcSqrt(x); }
 extern "C" void _1_rcVcross_(float *dest, const float *v1, const float *v2) { ::rcVcross(dest, v1, v2); }

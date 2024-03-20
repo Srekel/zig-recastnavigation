@@ -657,8 +657,7 @@ pub const RC_MESH_NULL_IDX = _1_RC_MESH_NULL_IDX_;
 extern const _1_RC_NULL_AREA_: *const u8;
 pub const RC_NULL_AREA = _1_RC_NULL_AREA_;
 
-extern const _1_RC_WALKABLE_AREA_: *const u8;
-pub const RC_WALKABLE_AREA = _1_RC_WALKABLE_AREA_;
+pub extern const WALKABLE_AREA: u8;
 
 extern const _1_RC_NOT_CONNECTED_: *const c_int;
 pub const RC_NOT_CONNECTED = _1_RC_NOT_CONNECTED_;

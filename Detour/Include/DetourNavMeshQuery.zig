@@ -104,15 +104,15 @@ pub const dtPolyQuery = extern struct {
 /// @UntranspiledVerbatimLineCommentCommand detour
 pub const dtNavMeshQuery = extern struct {
     /// Pointer to navmesh data.
-    m_nav: [*c]const dtNavMesh,
+    m_nav: *const dtNavMesh,
     /// Sliced query state.
     m_query: dtQueryData,
     /// Pointer to small node pool.
-    m_tinyNodePool: [*c]dtNodePool,
+    m_tinyNodePool: *dtNodePool,
     /// Pointer to node pool.
-    m_nodePool: [*c]dtNodePool,
+    m_nodePool: *dtNodePool,
     /// Pointer to open list queue.
-    m_openList: [*c]dtNodeQueue,
+    m_openList: *dtNodeQueue,
 
     extern fn _1_dtNavMeshQuery_init_(self: *dtNavMeshQuery) void;
     pub const init = _1_dtNavMeshQuery_init_;
@@ -120,7 +120,7 @@ pub const dtNavMeshQuery = extern struct {
     extern fn _1_dtNavMeshQuery_deinit_(self: *dtNavMeshQuery) void;
     pub const deinit = _1_dtNavMeshQuery_deinit_;
 
-    extern fn _2_dtNavMeshQuery_init_(self: *dtNavMeshQuery, nav: [*c]const dtNavMesh, maxNodes: c_int) dtStatus;
+    extern fn _2_dtNavMeshQuery_init_(self: *dtNavMeshQuery, nav: *const dtNavMesh, maxNodes: c_int) dtStatus;
     /// Initializes the query object.
     ///  @param[in] nav 			Pointer to the dtNavMesh object to use for all queries.
     ///  @param[in] maxNodes 	Maximum number of search nodes. [Limits: 0
@@ -512,19 +512,19 @@ pub const dtNavMeshQuery = extern struct {
     /// @see True if the polygon is in closed list.
     pub const isInClosedList = _1_dtNavMeshQuery_isInClosedList_;
 
-    extern fn _1_dtNavMeshQuery_getNodePool_(self: *const dtNavMeshQuery) [*c]dtNodePool;
+    extern fn _1_dtNavMeshQuery_getNodePool_(self: *const dtNavMeshQuery) *dtNodePool;
     /// Gets the node pool.
     /// @see The node pool.
     pub const getNodePool = _1_dtNavMeshQuery_getNodePool_;
 
-    extern fn _1_dtNavMeshQuery_getAttachedNavMesh_(self: *const dtNavMeshQuery) [*c]const dtNavMesh;
+    extern fn _1_dtNavMeshQuery_getAttachedNavMesh_(self: *const dtNavMeshQuery) *const dtNavMesh;
     /// Gets the navigation mesh the query object is using.
     /// @see The navigation mesh the query object is using.
     pub const getAttachedNavMesh = _1_dtNavMeshQuery_getAttachedNavMesh_;
 
     pub const dtQueryData = extern struct {
         status: dtStatus,
-        lastBestNode: [*c]dtNode,
+        lastBestNode: *dtNode,
         lastBestNodeCost: f32,
         startRef: dtPolyRef,
         endRef: dtPolyRef,
