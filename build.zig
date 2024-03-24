@@ -16,6 +16,7 @@ pub fn build(b: *Build) void {
     zignav_c_cpp.linkLibC();
     zignav_c_cpp.addIncludePath(.{ .path = "Recast/Include" });
     zignav_c_cpp.addIncludePath(.{ .path = "Detour/Include" });
+    zignav_c_cpp.addIncludePath(.{ .path = "DetourTileCache/Include" });
     zignav_c_cpp.addCSourceFiles(.{
         .files = &.{
             // Recast
@@ -47,6 +48,11 @@ pub fn build(b: *Build) void {
             "Detour/Source/DetourNavMeshBuilder.cpp",
             "Detour/Source/DetourNavMeshQuery.cpp",
             "Detour/Source/DetourNode.cpp",
+            // Detour Tile Cache
+            "DetourTileCache/Include/DetourTileCache_glue.cpp",
+            "DetourTileCache/Include/DetourTileCacheBuilder_glue.cpp",
+            "DetourTileCache/Source/DetourTileCache.cpp",
+            "DetourTileCache/Source/DetourTileCacheBuilder.cpp",
         },
         .flags = &.{},
     });

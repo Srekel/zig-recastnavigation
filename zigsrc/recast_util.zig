@@ -22,12 +22,14 @@ pub fn generateConfig(game_config: GameConfig) Recast.rcConfig {
     const walkable_height: i32 = @intFromFloat(math.ceil(game_config.character_height / cell_size_y));
     const walkable_radius: i32 = @intFromFloat(math.ceil(game_config.character_radius / cell_size_xz));
     const max_edge_len = walkable_radius * 8;
+    const tile_size = 48; // from sample
+    const border_size = walkable_radius + 3; // from sample
 
     var config: Recast.rcConfig = .{
-        .width = 100, // ?
-        .height = 100,
-        .tileSize = 1, // ?
-        .borderSize = 1, // ?
+        .width = tile_size + border_size * 2, // from sample
+        .height = tile_size + border_size * 2, // from sample
+        .tileSize = tile_size,
+        .borderSize = border_size,
         .cs = cell_size_xz,
         .ch = cell_size_y,
         .bmin = .{ 0, 0, 0 },

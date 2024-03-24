@@ -2,6 +2,9 @@
 const std = @import("std");
 //const cpp = @import("cpp");
 
+const dtStatus = u32;
+const dtTileCacheLayerHeader = anyopaque;
+
 pub const dtObstacleRef = c_uint;
 
 pub const dtCompressedTileRef = c_uint;
@@ -19,17 +22,13 @@ pub const dtCompressedTileFlags = extern struct {
 pub const dtCompressedTile = extern struct {
     /// Counter describing modifications to the tile.
     salt: c_uint,
-    header: [*c]dtTileCacheLayerHeader,
+    header: *dtTileCacheLayerHeader,
     compressed: [*c]u8,
     compressedSize: c_int,
     data: [*c]u8,
     dataSize: c_int,
     flags: c_uint,
     next: [*c]dtCompressedTile,
-
-    // opaques
-
-    const dtTileCacheLayerHeader = anyopaque;
 };
 
 pub const ObstacleState = extern struct {
@@ -131,6 +130,9 @@ pub const dtTileCache = extern struct {
 
         // pub usingnamespace cpp.FlagsMixin(ObstacleRequestAction);
     };
+    
+    const MAX_REQUESTS = 64;
+    const MAX_UPDATE = 64;
 
     /// Tile hash lookup size (must be pot).
     m_tileLutSize: c_int,
@@ -147,14 +149,14 @@ pub const dtTileCache = extern struct {
     /// Number of tile bits in the tile ID.
     m_tileBits: c_uint,
     m_params: dtTileCacheParams,
-    m_talloc: [*c]dtTileCacheAlloc,
-    m_tcomp: [*c]dtTileCacheCompressor,
+    m_talloc: *dtTileCacheAlloc,
+    m_tcomp: *dtTileCacheCompressor,
     m_tmproc: [*c]dtTileCacheMeshProcess,
     m_obstacles: [*c]dtTileCacheObstacle,
     m_nextFreeObstacle: [*c]dtTileCacheObstacle,
-    m_reqs: [64]ObstacleRequest,
+    m_reqs: [MAX_REQUESTS]ObstacleRequest,
     m_nreqs: c_int,
-    m_update: [64]dtCompressedTileRef,
+    m_update: [MAX_UPDATE]dtCompressedTileRef,
     m_nupdate: c_int,
 
     extern fn _1_dtTileCache_init_(self: *dtTileCache) void;
@@ -190,7 +192,7 @@ pub const dtTileCache = extern struct {
     extern fn _1_dtTileCache_getObstacleRef_(self: *const dtTileCache, obmin: [*c]const dtTileCacheObstacle) dtObstacleRef;
     pub const getObstacleRef = _1_dtTileCache_getObstacleRef_;
 
-    extern fn _2_dtTileCache_init_(self: *dtTileCache, params: [*c]const dtTileCacheParams, talloc: [*c]dtTileCacheAlloc, tcomp: [*c]dtTileCacheCompressor, tmproc: [*c]dtTileCacheMeshProcess) dtStatus;
+    extern fn _2_dtTileCache_init_(self: *dtTileCache, params: [*c]const dtTileCacheParams, talloc: *dtTileCacheAlloc, tcomp: *dtTileCacheCompressor, tmproc: [*c]dtTileCacheMeshProcess) dtStatus;
     pub const init__Overload2 = _2_dtTileCache_init_;
 
     extern fn _1_dtTileCache_getTilesAt_(self: *const dtTileCache, tx: c_int, ty: c_int, tiles: [*c]dtCompressedTileRef, maxTiles: c_int) c_int;
@@ -288,11 +290,6 @@ pub const dtTileCache = extern struct {
         ref: dtObstacleRef,
     };
 
-    extern const _1_dtTileCache_MAX_REQUESTS_: *const c_int;
-    pub const MAX_REQUESTS = _1_dtTileCache_MAX_REQUESTS_;
-
-    extern const _1_dtTileCache_MAX_UPDATE_: *const c_int;
-    pub const MAX_UPDATE = _1_dtTileCache_MAX_UPDATE_;
 
     // opaques
 

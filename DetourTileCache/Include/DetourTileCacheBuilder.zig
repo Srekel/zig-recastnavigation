@@ -130,3 +130,6 @@ extern fn _1_dtTileCacheHeaderSwapEndian_(data: [*c]u8, dataSize: c_int) bool;
 ///  @param[in,out] data 		The tile data array.
 ///  @param[in] dataSize 	The size of the data array.
 pub const dtTileCacheHeaderSwapEndian = _1_dtTileCacheHeaderSwapEndian_;
+
+pub extern fn getCopyCompressor() [*c]dtTileCacheCompressor;
+pub extern fn getDefaultAlloc() [*c]dtTileCacheAlloc;

@@ -2,17 +2,65 @@
 #include <new>
 #include "DetourTileCacheBuilder.h"
 
-extern "C" const void* _1_DT_TILECACHE_MAGIC_ = (void*)& ::DT_TILECACHE_MAGIC;
-extern "C" const void* _1_DT_TILECACHE_VERSION_ = (void*)& ::DT_TILECACHE_VERSION;
-extern "C" const void* _1_DT_TILECACHE_NULL_AREA_ = (void*)& ::DT_TILECACHE_NULL_AREA;
-extern "C" const void* _1_DT_TILECACHE_WALKABLE_AREA_ = (void*)& ::DT_TILECACHE_WALKABLE_AREA;
-extern "C" const void* _1_DT_TILECACHE_NULL_IDX_ = (void*)& ::DT_TILECACHE_NULL_IDX;
+extern "C" const void *_1_DT_TILECACHE_MAGIC_ = (void *)&::DT_TILECACHE_MAGIC;
+extern "C" const void *_1_DT_TILECACHE_VERSION_ = (void *)&::DT_TILECACHE_VERSION;
+extern "C" const void *_1_DT_TILECACHE_NULL_AREA_ = (void *)&::DT_TILECACHE_NULL_AREA;
+extern "C" const void *_1_DT_TILECACHE_WALKABLE_AREA_ = (void *)&::DT_TILECACHE_WALKABLE_AREA;
+extern "C" const void *_1_DT_TILECACHE_NULL_IDX_ = (void *)&::DT_TILECACHE_NULL_IDX;
 extern "C" void _1_dtTileCacheAlloc_deinit_(::dtTileCacheAlloc *self) { self->~dtTileCacheAlloc(); }
 extern "C" void _1_dtTileCacheCompressor_deinit_(::dtTileCacheCompressor *self) { self->~dtTileCacheCompressor(); }
-extern "C" int _1_dtTileCacheCompressor_maxCompressedSize_(::dtTileCacheCompressor* self, const int bufferSize) { return self->maxCompressedSize(bufferSize); }
-extern "C" void _1_dtFreeTileCacheLayer_(dtTileCacheAlloc * alloc, dtTileCacheLayer * layer) { ::dtFreeTileCacheLayer(alloc, layer); }
-extern "C" dtTileCacheContourSet * _1_dtAllocTileCacheContourSet_(dtTileCacheAlloc * alloc) { return ::dtAllocTileCacheContourSet(alloc); }
-extern "C" void _1_dtFreeTileCacheContourSet_(dtTileCacheAlloc * alloc, dtTileCacheContourSet * cset) { ::dtFreeTileCacheContourSet(alloc, cset); }
-extern "C" dtTileCachePolyMesh * _1_dtAllocTileCachePolyMesh_(dtTileCacheAlloc * alloc) { return ::dtAllocTileCachePolyMesh(alloc); }
-extern "C" void _1_dtFreeTileCachePolyMesh_(dtTileCacheAlloc * alloc, dtTileCachePolyMesh * lmesh) { ::dtFreeTileCachePolyMesh(alloc, lmesh); }
-extern "C" bool _1_dtTileCacheHeaderSwapEndian_(unsigned char * data, const int dataSize) { return ::dtTileCacheHeaderSwapEndian(data, dataSize); }
+extern "C" int _1_dtTileCacheCompressor_maxCompressedSize_(::dtTileCacheCompressor *self, const int bufferSize) { return self->maxCompressedSize(bufferSize); }
+extern "C" void _1_dtFreeTileCacheLayer_(dtTileCacheAlloc *alloc, dtTileCacheLayer *layer) { ::dtFreeTileCacheLayer(alloc, layer); }
+extern "C" dtTileCacheContourSet *_1_dtAllocTileCacheContourSet_(dtTileCacheAlloc *alloc) { return ::dtAllocTileCacheContourSet(alloc); }
+extern "C" void _1_dtFreeTileCacheContourSet_(dtTileCacheAlloc *alloc, dtTileCacheContourSet *cset) { ::dtFreeTileCacheContourSet(alloc, cset); }
+extern "C" dtTileCachePolyMesh *_1_dtAllocTileCachePolyMesh_(dtTileCacheAlloc *alloc) { return ::dtAllocTileCachePolyMesh(alloc); }
+extern "C" void _1_dtFreeTileCachePolyMesh_(dtTileCacheAlloc *alloc, dtTileCachePolyMesh *lmesh) { ::dtFreeTileCachePolyMesh(alloc, lmesh); }
+extern "C" bool _1_dtTileCacheHeaderSwapEndian_(unsigned char *data, const int dataSize) { return ::dtTileCacheHeaderSwapEndian(data, dataSize); }
+
+// Hack to provide trivial implementation for OOP objects
+
+struct CopyCompressor : public dtTileCacheCompressor
+{
+    virtual ~CopyCompressor(){};
+
+    virtual int maxCompressedSize(const int bufferSize)
+    {
+        return bufferSize;
+    }
+
+    virtual dtStatus compress(const unsigned char *buffer, const int bufferSize,
+                              unsigned char *compressed, const int /*maxCompressedSize*/, int *compressedSize)
+    {
+        for (int i = 0; i < bufferSize; i++)
+        {
+            compressed[i] = buffer[i];
+        }
+        *compressedSize = bufferSize;
+        return DT_SUCCESS;
+    }
+
+    virtual dtStatus decompress(const unsigned char *compressed, const int compressedSize,
+                                unsigned char *buffer, const int maxBufferSize, int *bufferSize)
+    {
+        for (int i = 0; i < compressedSize; i++)
+        {
+            buffer[i] = compressed[i];
+        }
+        *bufferSize = compressedSize;
+        return DT_SUCCESS;
+    }
+};
+
+static CopyCompressor copy_compressor;
+
+extern "C" const dtTileCacheCompressor *getCopyCompressor()
+{
+    return &copy_compressor;
+}
+
+static dtTileCacheAlloc default_alloc;
+
+extern "C" const dtTileCacheAlloc *getDefaultAlloc()
+{
+    return &default_alloc;
+}
