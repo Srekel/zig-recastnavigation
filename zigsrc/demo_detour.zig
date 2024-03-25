@@ -81,7 +81,7 @@ pub fn run_demo() !void {
 
     const nav_mesh = DetourNavMesh.dtAllocNavMesh();
     defer DetourNavMesh.dtFreeNavMesh(nav_mesh);
-    try detour_util.createNavMesh(poly_mesh, poly_mesh_detail, config, nav_mesh);
+    try detour_util.initNavMeshFromPolyMesh(poly_mesh, poly_mesh_detail, config, nav_mesh);
 
     const query = DetourNavMeshQuery.dtAllocNavMeshQuery();
     const max_nodes = 2048; // as per solomesh sample

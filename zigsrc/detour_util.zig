@@ -10,7 +10,7 @@ const DetourStatus = zignav.DetourStatus;
 // For more on all this, see here:
 // https://recastnav.com/md_Docs__1_Introducation.html
 
-pub fn createNavMesh(
+pub fn initNavMeshFromPolyMesh(
     poly_mesh: [*c]const Recast.rcPolyMesh,
     poly_mesh_detail: [*c]const Recast.rcPolyMeshDetail,
     config: Recast.rcConfig,

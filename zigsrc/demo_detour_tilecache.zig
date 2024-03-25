@@ -12,6 +12,8 @@ const DetourTileCacheBuilder = zignav.DetourTileCacheBuilder;
 const recast_util = @import("recast_util.zig");
 const detour_util = @import("detour_util.zig");
 
+// This is based on the Sample_TempObstacles demo.
+
 pub fn run_demo() !void {
     var nav_ctx: Recast.rcContext = undefined;
     nav_ctx.init(false);
@@ -105,7 +107,7 @@ pub fn run_demo() !void {
         .maxObstacles = 128,
     };
 
-    const tile_alloc = DetourTileCacheBuilder.getCopyCompressor();
+    const tile_alloc = DetourTileCacheBuilder.getDefaultAlloc();
     const tile_compressor = DetourTileCacheBuilder.getCopyCompressor();
     const mesh_processor: [*c]DetourTileCache.dtTileCacheMeshProcess = null;
     const status_tc = tile_cache.*.init__Overload2(&tcparams, tile_alloc, tile_compressor, mesh_processor);
@@ -116,7 +118,28 @@ pub fn run_demo() !void {
     // Create first navmesh
     const nav_mesh = DetourNavMesh.dtAllocNavMesh();
     defer DetourNavMesh.dtFreeNavMesh(nav_mesh);
-    try detour_util.createNavMesh(poly_mesh, poly_mesh_detail, config, nav_mesh);
+
+    // Max tiles and max polys affect how the tile IDs are caculated.
+    // There are 22 bits available for identifying a tile and a polygon.
+    const tile_bits: u5 = @intCast(@min(
+        std.math.log2_int(u32, std.math.ceilPowerOfTwo(u32, @as(u32, @intCast(tw * th)) * EXPECTED_LAYERS_PER_TILE) catch unreachable),
+        14,
+    ));
+    const poly_bits = 22 - tile_bits;
+    const max_tiles = @as(u32, 1) << tile_bits;
+    const max_polys_per_tile = @as(u32, 1) << poly_bits;
+
+    const navmesh_params = DetourNavMesh.dtNavMeshParams{
+        .orig = config.bmin,
+        .tileWidth = @floatFromInt(config.tileSize),
+        .tileHeight = @floatFromInt(config.tileSize),
+        .maxTiles = @intCast(max_tiles),
+        .maxPolys = @intCast(max_polys_per_tile),
+    };
+    const status_nm = nav_mesh.*.init__Overload2(&navmesh_params);
+    if (DetourStatus.dtStatusFailed(status_nm)) {
+        return error.FailedNavMeshInit;
+    }
 
     // Attempt path find
     const query = DetourNavMeshQuery.dtAllocNavMeshQuery();
