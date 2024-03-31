@@ -16,6 +16,28 @@ pub fn initNavMeshFromPolyMesh(
     config: Recast.rcConfig,
     nav_mesh: [*c]DetourNavMesh.dtNavMesh,
 ) !void {
+    const nav_tile = try createTileFromPolyMesh(
+        poly_mesh,
+        poly_mesh_detail,
+        config,
+        nav_mesh,
+        0,
+        0,
+    );
+
+    const status = nav_mesh.*.init__Overload3(nav_tile.data, nav_tile.data_size, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA.bits);
+    if (DetourStatus.dtStatusFailed(status)) {
+        return error.FailedNavMeshInit;
+    }
+}
+
+pub fn createTileFromPolyMesh(
+    poly_mesh: [*c]const Recast.rcPolyMesh,
+    poly_mesh_detail: [*c]const Recast.rcPolyMeshDetail,
+    config: Recast.rcConfig,
+    tile_x: c_int,
+    tile_y: c_int,
+) !struct { data: [*c]u8, data_size: c_int } {
     var nav_mesh_params: DetourNavMeshBuilder.dtNavMeshCreateParams = .{
         .verts = poly_mesh.*.verts,
         .vertCount = poly_mesh.*.nverts,
@@ -43,8 +65,8 @@ pub fn initNavMeshFromPolyMesh(
         .ch = config.ch,
         .buildBvTree = true,
         .userId = 0,
-        .tileX = 0,
-        .tileY = 0,
+        .tileX = tile_x,
+        .tileY = tile_y,
         .tileLayer = 0,
         .bmin = config.bmin,
         .bmax = config.bmax,
@@ -56,10 +78,10 @@ pub fn initNavMeshFromPolyMesh(
         return error.FailedBuildingDetourMesh;
     }
 
-    const status = nav_mesh.*.init__Overload3(nav_data, nav_data_size, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA.bits);
-    if (DetourStatus.dtStatusFailed(status)) {
-        return error.FailedNavMeshInit;
-    }
+    return .{
+        .data = nav_data,
+        .data_size = nav_data_size,
+    };
 }
 
 pub const Path = struct {

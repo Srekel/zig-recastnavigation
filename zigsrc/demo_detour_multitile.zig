@@ -1,18 +1,12 @@
 const std = @import("std");
-
 const zignav = @import("zignav");
 const Recast = zignav.Recast;
 const DetourNavMesh = zignav.DetourNavMesh;
 const DetourNavMeshBuilder = zignav.DetourNavMeshBuilder;
 const DetourNavMeshQuery = zignav.DetourNavMeshQuery;
 const DetourStatus = zignav.DetourStatus;
-const DetourTileCache = zignav.DetourTileCache;
-const DetourTileCacheBuilder = zignav.DetourTileCacheBuilder;
-
 const recast_util = @import("recast_util.zig");
 const detour_util = @import("detour_util.zig");
-
-// This is based on the Sample_TempObstacles demo.
 
 pub fn run_demo() !void {
     var nav_ctx: Recast.rcContext = undefined;
@@ -23,6 +17,9 @@ pub fn run_demo() !void {
         .indoors = true,
     };
     const config = recast_util.generateConfig(game_config);
+
+    nav_ctx.resetTimers();
+    nav_ctx.startTimer(Recast.rcTimerLabel.RC_TIMER_TOTAL);
 
     const vertices = [_]f32{
         0,  1, 0,
@@ -68,12 +65,12 @@ pub fn run_demo() !void {
         poly_mesh_detail,
     );
 
+    nav_ctx.stopTimer(Recast.rcTimerLabel.RC_TIMER_TOTAL);
+    const total_build_time = nav_ctx.getAccumulatedTime(Recast.rcTimerLabel.RC_TIMER_TOTAL);
+    _ = total_build_time;
+
     const FLAG_AREA_GROUND = 0;
     const FLAG_POLY_WALK = 1;
-
-    // As per other sample,
-    // This value specifies how many layers (or "floors") each navmesh tile is expected to have.
-    const EXPECTED_LAYERS_PER_TILE = 4;
 
     for (0..@intCast(poly_mesh.*.npolys)) |pi| {
         if (poly_mesh.*.areas[pi] == Recast.WALKABLE_AREA) {
@@ -82,44 +79,16 @@ pub fn run_demo() !void {
         }
     }
 
-    const max_edge_error = 1.3;
-    const tw = @divFloor(config.width + config.tileSize - 1, config.tileSize);
-    const th = @divFloor(config.height + config.tileSize - 1, config.tileSize);
-
-    // Init Tile Cache
-    const tile_cache = DetourTileCache.dtAllocTileCache();
-    if (tile_cache == null) {
-        return error.OutOfMemory;
-    }
-
-    var tcparams: DetourTileCache.dtTileCacheParams = .{
-        .orig = config.bmin,
-        .cs = config.cs,
-        .ch = config.ch,
-        .width = config.tileSize,
-        .height = config.tileSize,
-        .walkableHeight = @floatFromInt(config.walkableHeight),
-        .walkableRadius = @floatFromInt(config.walkableRadius),
-        .walkableClimb = @floatFromInt(config.walkableClimb),
-        .maxSimplificationError = max_edge_error,
-        .maxTiles = tw * th * EXPECTED_LAYERS_PER_TILE,
-        .maxObstacles = 128,
-    };
-
-    const tile_alloc = DetourTileCacheBuilder.getDefaultAlloc();
-    const tile_compressor = DetourTileCacheBuilder.getCopyCompressor();
-    const mesh_processor: [*c]DetourTileCache.dtTileCacheMeshProcess = null;
-    const status_tc = tile_cache.*.init__Overload2(&tcparams, tile_alloc, tile_compressor, mesh_processor);
-
-    if (DetourStatus.dtStatusFailed(status_tc)) {
-        return error.FailedNavQueryInit;
-    }
-    // Create first navmesh
     const nav_mesh = DetourNavMesh.dtAllocNavMesh();
     defer DetourNavMesh.dtFreeNavMesh(nav_mesh);
 
-    // Max tiles and max polys affect how the tile IDs are caculated.
+    // Max tiles and max polys affect how the tile IDs are calculated.
     // There are 22 bits available for identifying a tile and a polygon.
+    const EXPECTED_LAYERS_PER_TILE = 4;
+    const max_edge_error = 1.3;
+    _ = max_edge_error; // autofix
+    const tw = @divFloor(config.width + config.tileSize - 1, config.tileSize);
+    const th = @divFloor(config.height + config.tileSize - 1, config.tileSize);
     const tile_bits: u5 = @intCast(@min(
         std.math.log2_int(u32, std.math.ceilPowerOfTwo(u32, @as(u32, @intCast(tw * th)) * EXPECTED_LAYERS_PER_TILE) catch unreachable),
         14,
@@ -140,7 +109,17 @@ pub fn run_demo() !void {
         return error.FailedNavMeshInit;
     }
 
-    // Attempt path find
+    const tile = try detour_util.createTileFromPolyMesh(poly_mesh, poly_mesh_detail, config, 0, 0);
+
+    var tile_ref: DetourNavMesh.dtPolyRef = 0;
+    const status_tile = nav_mesh.*.addTile(tile.data, tile.data_size, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA.bits, 0, &tile_ref);
+    if (DetourStatus.dtStatusFailed(status_tile)) {
+        return error.FailedTileAdd;
+    }
+    if (tile_ref == 0) {
+        return error.FailedTileAddNoRef;
+    }
+
     const query = DetourNavMeshQuery.dtAllocNavMeshQuery();
     const max_nodes = 2048; // as per solomesh sample
     const status = query.*.init__Overload2(nav_mesh, max_nodes);
