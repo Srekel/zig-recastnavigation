@@ -10,6 +10,7 @@ pub const GameConfig = struct {
     character_height: f32 = 2.0,
     character_radius: f32 = 0.4,
     max_step_climb: f32 = 0.2,
+    tile_size: i32 = 48, // from sample
     indoors: bool,
 };
 
@@ -22,8 +23,9 @@ pub fn generateConfig(game_config: GameConfig) Recast.rcConfig {
     const walkable_height: i32 = @intFromFloat(math.ceil(game_config.character_height / cell_size_y));
     const walkable_radius: i32 = @intFromFloat(math.ceil(game_config.character_radius / cell_size_xz));
     const max_edge_len = walkable_radius * 8;
-    const tile_size = 48; // from sample
+    const tile_size = game_config.tile_size;
     const border_size = walkable_radius + 3; // from sample
+    const padding = cell_size_xz * @as(f32, @floatFromInt(border_size));
 
     var config: Recast.rcConfig = .{
         .width = tile_size + border_size * 2, // from sample
@@ -32,8 +34,8 @@ pub fn generateConfig(game_config: GameConfig) Recast.rcConfig {
         .borderSize = border_size,
         .cs = cell_size_xz,
         .ch = cell_size_y,
-        .bmin = .{ 0, 0, 0 },
-        .bmax = .{ 100, 100, 100 },
+        .bmin = .{ 0 - padding, 0, 0 - padding },
+        .bmax = .{ 64 + padding, 64, 64 + padding },
         .walkableSlopeAngle = 45,
         .walkableHeight = walkable_height,
         .walkableClimb = walkable_climb,

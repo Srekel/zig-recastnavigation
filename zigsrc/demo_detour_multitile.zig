@@ -15,6 +15,7 @@ pub fn run_demo() !void {
 
     const game_config: recast_util.GameConfig = .{
         .indoors = true,
+        .tile_size = 64,
     };
     const config = recast_util.generateConfig(game_config);
 
@@ -23,10 +24,16 @@ pub fn run_demo() !void {
 
     const vertices = [_]f32{
         0,  1, 0,
-        10, 1, 0,
-        10, 1, 10,
-        0,  1, 10,
+        64, 1, 0,
+        64, 1, 64,
+        0,  1, 64,
     };
+    // const vertices = [_]f32{
+    //     -10, 1, -10,
+    //     164, 1, -10,
+    //     164, 1, 164,
+    //     -10, 1, 164,
+    // };
 
     const triangles = [_]i32{
         0, 2, 1,
@@ -135,9 +142,40 @@ pub fn run_demo() !void {
         .poly_buffer = &path_polys,
     };
 
+    // try detour_util.findPath(
+    //     query,
+    //     &[3]f32{ 1, 1, 1 },
+    //     &[3]f32{ 9, 1, 9 },
+    //     &[3]f32{ 0.1, 0.1, 0.1 },
+    //     &filter,
+    //     &path,
+    // );
+
+    const tile_factor = @as(f32, @floatFromInt(config.tileSize)) * config.cs;
+    _ = tile_factor; // autofix
+    // const tile_factor = config.tileSize * @as(c_int, @intFromFloat(config.cs));
+
+    const tile2 = try detour_util.createTileFromPolyMesh(
+        poly_mesh,
+        poly_mesh_detail,
+        config,
+        1,
+        // @intFromFloat(64 / tile_factor),
+        0,
+    );
+
+    var tile_ref2: DetourNavMesh.dtPolyRef = 0;
+    const status_tile2 = nav_mesh.*.addTile(tile2.data, tile2.data_size, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA.bits, 0, &tile_ref2);
+    if (DetourStatus.dtStatusFailed(status_tile2)) {
+        return error.FailedTileAdd;
+    }
+    if (tile_ref2 == 0) {
+        return error.FailedTileAddNoRef;
+    }
+
     try detour_util.findPath(
         query,
-        &[3]f32{ 1, 1, 1 },
+        &[3]f32{ 71, 1, 1 },
         &[3]f32{ 9, 1, 9 },
         &[3]f32{ 0.1, 0.1, 0.1 },
         &filter,

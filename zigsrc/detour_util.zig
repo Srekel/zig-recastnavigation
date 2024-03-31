@@ -106,11 +106,17 @@ pub fn findPath(
     if (DetourStatus.dtStatusFailed(status)) {
         return error.FailedNavQueryPoly;
     }
+    if (path.start_poly == 0) {
+        return error.FailedNavQueryPolyZero;
+    }
 
     status = query.*.findNearestPoly(end, half_extents, filter, &path.end_poly, &path.end_pos);
 
     if (DetourStatus.dtStatusFailed(status)) {
         return error.FailedNavQueryPoly;
+    }
+    if (path.end_poly == 0) {
+        return error.FailedNavQueryPolyZero;
     }
 
     status = query.*.findPath(
