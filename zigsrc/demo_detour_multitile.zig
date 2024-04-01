@@ -80,8 +80,16 @@ pub fn run_demo() !void {
         0,
     );
 
+    // Don't FREE_DATA so that we can remove it and re-add it.
     var tile_ref2: DetourNavMesh.dtPolyRef = 0;
-    const status_tile2 = nav_mesh.*.addTile(tile2.data, tile2.data_size, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA.bits, 0, &tile_ref2);
+    const status_tile2 = nav_mesh.*.addTile(
+        tile2.data,
+        tile2.data_size,
+        // DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA.bits,
+        0,
+        0,
+        &tile_ref2,
+    );
     if (DetourStatus.dtStatusFailed(status_tile2)) {
         return error.FailedTileAdd;
     }
@@ -113,6 +121,33 @@ pub fn run_demo() !void {
         &filter,
         &path,
     );
+
+    // Between the two tiles
+    try detour_util.findPath(
+        query,
+        &[3]f32{ 71, 1, 1 },
+        &[3]f32{ 9, 1, 9 },
+        &[3]f32{ 0.1, 0.1, 0.1 },
+        &filter,
+        &path,
+    );
+
+    const status_rm = nav_mesh.*.removeTile(tile_ref2, null, 0);
+    if (DetourStatus.dtStatusFailed(status_rm)) {
+        return error.FailedTileRemove;
+    }
+
+    // Within first tile
+    try detour_util.findPath(
+        query,
+        &[3]f32{ 1, 1, 1 },
+        &[3]f32{ 9, 1, 9 },
+        &[3]f32{ 0.1, 0.1, 0.1 },
+        &filter,
+        &path,
+    );
+
+    _ = nav_mesh.*.addTile(tile2.data, tile2.data_size, DetourNavMesh.dtTileFlags.DT_TILE_FREE_DATA.bits, 0, &tile_ref2);
 
     // Between the two tiles
     try detour_util.findPath(
