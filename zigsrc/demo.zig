@@ -9,7 +9,9 @@ const demo_detour_tilecache = @import("demo_detour_tilecache.zig");
 
 pub fn main() !void {
     // try demo_recast.run_demo();
-    // try demo_detour.run_demo();
-    try demo_detour_multitile.run_demo();
+    try demo_detour.run_demo();
+    // try demo_detour_multitile.run_demo();
+
+    // TileCache demo is WIP.
     // try demo_detour_tilecache.run_demo();
 }
