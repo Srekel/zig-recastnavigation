@@ -7,3 +7,5 @@ pub const DetourStatus = @import("Detour/Include/DetourStatus.zig");
 
 pub const DetourTileCache = @import("DetourTileCache/Include/DetourTileCache.zig");
 pub const DetourTileCacheBuilder = @import("DetourTileCache/Include/DetourTileCacheBuilder.zig");
+
+pub const DetourPathCorridor = @import("DetourCrowd/Include/DetourPathCorridor.zig");

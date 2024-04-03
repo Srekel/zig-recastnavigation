@@ -17,6 +17,7 @@ pub fn build(b: *Build) void {
     zignav_c_cpp.addIncludePath(.{ .path = "Recast/Include" });
     zignav_c_cpp.addIncludePath(.{ .path = "Detour/Include" });
     zignav_c_cpp.addIncludePath(.{ .path = "DetourTileCache/Include" });
+    zignav_c_cpp.addIncludePath(.{ .path = "DetourCrowd/Include" });
     zignav_c_cpp.addCSourceFiles(.{
         .files = &.{
             // Recast
@@ -53,6 +54,9 @@ pub fn build(b: *Build) void {
             "DetourTileCache/Include/DetourTileCacheBuilder_glue.cpp",
             "DetourTileCache/Source/DetourTileCache.cpp",
             "DetourTileCache/Source/DetourTileCacheBuilder.cpp",
+            // Detour Crowd
+            "DetourCrowd/Include/DetourPathCorridor_glue.cpp",
+            "DetourCrowd/Source/DetourPathCorridor.cpp",
         },
         .flags = &.{},
     });

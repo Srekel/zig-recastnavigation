@@ -60,6 +60,13 @@ headers = [
         os.path.join("DetourTileCache", "Include", "DetourTileCache.h"),
         [os.path.join("..", "..", "Detour", "Include")],
     ),
+    ###
+    ### DETOUR CROWD
+    ###
+    Header(
+        os.path.join("DetourCrowd", "Include", "DetourPathCorridor.h"),
+        [os.path.join("..", "..", "Detour", "Include")],
+    ),
 ]
 
 
