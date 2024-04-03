@@ -20,7 +20,6 @@ pub fn initNavMeshFromPolyMesh(
         poly_mesh,
         poly_mesh_detail,
         config,
-        nav_mesh,
         0,
         0,
     );
