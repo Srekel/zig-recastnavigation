@@ -14,10 +14,10 @@ pub fn build(b: *Build) void {
         .optimize = optimize,
     });
     zignav_c_cpp.linkLibC();
-    zignav_c_cpp.addIncludePath(.{ .path = "Recast/Include" });
-    zignav_c_cpp.addIncludePath(.{ .path = "Detour/Include" });
-    zignav_c_cpp.addIncludePath(.{ .path = "DetourTileCache/Include" });
-    zignav_c_cpp.addIncludePath(.{ .path = "DetourCrowd/Include" });
+    zignav_c_cpp.addIncludePath(b.path("Recast/Include"));
+    zignav_c_cpp.addIncludePath(b.path("Detour/Include"));
+    zignav_c_cpp.addIncludePath(b.path("DetourTileCache/Include"));
+    zignav_c_cpp.addIncludePath(b.path("DetourCrowd/Include"));
     zignav_c_cpp.addCSourceFiles(.{
         .files = &.{
             // Recast
@@ -64,7 +64,7 @@ pub fn build(b: *Build) void {
     b.installArtifact(zignav_c_cpp);
 
     var zignav = b.addModule("zignav", .{
-        .root_source_file = .{ .path = "main.zig" },
+        .root_source_file = b.path("main.zig"),
         .target = target,
         .optimize = optimize,
     });
